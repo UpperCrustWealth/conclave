@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>UpperCrust Wealth — The Conclave</title>
 <meta name="description" content="Curated for those who appreciate the finer things in life. Vadodara, 10 October 2026.">
+<link rel="icon" type="image/png" href="assets/ucw-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@200;300;400;500&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
@@ -1027,16 +1028,38 @@
           submittedAt: new Date().toISOString()
         };
 
+        // Apps Script writes the row before it finishes sending a response, and a
+        // slow/flaky connection can hold that response up well past what feels
+        // instant — especially on mobile. So the celebration fires optimistically
+        // after 3s even if the network is still working, rather than making the
+        // visitor stare at a spinner. The real request (with its own retries) keeps
+        // running in the background regardless, via the shared submittedAt dedupe key.
+        let settled = false;
+        function celebrateOnce() {
+          if (settled) return;
+          settled = true;
+          clearTimeout(optimisticTimer);
+          cForm.reset();
+          celebrateSuccess(cForm);
+        }
+        const optimisticTimer = setTimeout(celebrateOnce, 3000);
+
         postWithRetry(payload, CLIENT_ENDPOINT_URL, null)
           .then(async (res) => {
             let data = null;
             try { data = JSON.parse(await res.text()); } catch (parseErr) { data = res.ok ? { result: 'success' } : { result: 'error', error: 'HTTP ' + res.status }; }
             if (data && data.result === 'error') throw new Error(data.error || 'Unknown error');
-            cForm.reset();
-            celebrateSuccess(cForm);
+            celebrateOnce();
           })
           .catch((err) => {
+            if (settled) {
+              // already celebrated optimistically; the write almost certainly
+              // still went through, so don't undo the "Thank You" over this
+              console.error('Client RSVP: background confirmation failed after optimistic success:', err);
+              return;
+            }
             console.error('Client RSVP submit failed:', err);
+            clearTimeout(optimisticTimer);
             cErrorMsg.textContent = 'Something went wrong sending your response. Please try again, or email events@uppercrustwealth.com directly.';
             cErrorMsg.style.display = 'block';
           });

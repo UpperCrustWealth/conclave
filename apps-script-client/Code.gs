@@ -10,7 +10,7 @@
 
 const SHEET_NAME = 'Responses';
 const HEADERS = [
-  'Timestamp', 'PMS Registered Under', 'Matched', 'Your Name', 'Attending', 'No. of People', 'Source'
+  'Timestamp', 'PMS Registered Under', 'Matched', 'Your Name', 'Attending', 'No. of People', 'Source', 'Client Submitted At'
 ];
 
 // One-time setup: creates the sheet + header row. Run this once from the
@@ -44,7 +44,8 @@ function doPost(e) {
     const attending = String(data.attending || '').trim();
 
     if (!pmsName) return jsonOut_({ result: 'error', error: 'Missing PMS name' });
-    if (!yourName) return jsonOut_({ result: 'error', error: 'Missing your name' });
+    // "Your name" is optional: personalized links (?client=1&name=...) already
+    // identify the family/client via pmsName and skip asking this at all.
     if (attending !== 'Yes' && attending !== 'No') return jsonOut_({ result: 'error', error: 'Invalid attending value' });
 
     let guests = '';
@@ -53,22 +54,43 @@ function doPost(e) {
       if (!(guests >= 1 && guests <= 100)) return jsonOut_({ result: 'error', error: 'Invalid number of people' });
     }
 
+    const submittedAt = String(data.submittedAt || '');
+
     const lock = LockService.getScriptLock();
     if (!lock.tryLock(20000)) return jsonOut_({ result: 'busy' });
     try {
       const sheet = getSheet_();
-      // every RSVP is logged as its own row (not overwritten), so a client
-      // who submits twice just leaves two rows — an audit trail, not a state
-      sheet.appendRow([
-        new Date(),
-        pmsName,
-        data.pmsMatched ? 'Yes' : 'No',
-        yourName,
-        attending,
-        guests,
-        data.source || ''
-      ]);
-      SpreadsheetApp.flush();
+      // A slow/flaky connection can make the browser retry the exact same
+      // click several times even after the first attempt already wrote a
+      // row (the write happens before Apps Script finishes sending its
+      // response). submittedAt is generated once per click and stays the
+      // same across those retries, so checking recent rows for the same
+      // (pmsName, submittedAt) pair makes a retried submission a no-op
+      // instead of a duplicate row.
+      const lastRow = sheet.getLastRow();
+      let isDuplicate = false;
+      if (submittedAt && lastRow > 1) {
+        const scanFrom = Math.max(2, lastRow - 20);
+        // columns B..H (7 wide, starting at column 2): B=PMS Registered Under
+        // (index 0 in this range) .. H=Client Submitted At (index 6)
+        const recent = sheet.getRange(scanFrom, 2, lastRow - scanFrom + 1, 7).getValues();
+        isDuplicate = recent.some((r) => r[0] === pmsName && String(r[6]) === submittedAt);
+      }
+      if (!isDuplicate) {
+        // every genuinely new RSVP is logged as its own row (not overwritten),
+        // so a client who submits twice on purpose still leaves two rows
+        sheet.appendRow([
+          new Date(),
+          pmsName,
+          data.pmsMatched ? 'Yes' : 'No',
+          yourName,
+          attending,
+          guests,
+          data.source || '',
+          submittedAt
+        ]);
+        SpreadsheetApp.flush();
+      }
     } finally {
       lock.releaseLock();
     }
