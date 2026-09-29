@@ -147,7 +147,7 @@
   .input-group .check-group label.check-opt:hover{background:linear-gradient(135deg,#fbf5e6,#f5e6c4);}
   .input-group .check-group label.check-opt:has(input:checked){border-color:var(--gold-4);background:linear-gradient(135deg,#fbf1d6,#f2dca6);box-shadow:0 0 8px rgba(168,118,60,.25);}
   .input-group .check-opt input[type=checkbox]{flex:none;width:18px;height:18px;padding:0;margin:0;background:none;box-shadow:none;border-radius:4px;accent-color:#a8813f;}
-  .check-hint{font-size:11px;color:#7a7160;margin:-2px 0 8px;}
+  .check-hint{font-size:11px;color:#7a7160;margin:-2px 0 4px;}
   .reveal-block{display:none;}
   .reveal-block.show{display:block;animation:revealIn .35s ease both;}
   @keyframes revealIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
@@ -160,8 +160,8 @@
   /* ---- Client-link RSVP: yes/no + guest-count pickers, name autocomplete (borrowed from the RM attendance form) ---- */
   .ctx{font-size:12.5px;color:var(--text-dim);margin-bottom:14px;line-height:1.5;}
   .ctx b{color:#2b2417;}
-  .q-label{display:block;font-size:12.5px;font-weight:600;letter-spacing:.6px;line-height:1.4;color:#2b2417;
-    margin-bottom:10px;text-transform:uppercase;}
+  .q-label{display:block;font-size:14px;font-weight:600;letter-spacing:0;line-height:1.4;color:#2b2417;
+    margin-bottom:6px;text-transform:none;}
   .opt-list{display:flex;flex-direction:column;gap:10px;}
   .opt{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;text-align:left;cursor:pointer;
     font-family:inherit;font-size:14px;color:#2b2417;
@@ -462,11 +462,8 @@
               <span class="q-label">How many people will attend?</span>
               <div class="check-hint">Including yourself</div>
               <div class="chips" id="cChips"></div>
-              <div class="other-row" id="cOtherRow">
-                <div class="input-group" style="flex:1;margin:0"><input type="number" id="cOtherNum" min="1" max="100" inputmode="numeric" placeholder="Enter number"></div>
-                <button type="button" class="cta-btn" id="cOtherSave">Save</button>
-              </div>
-              <div class="step-nav" style="margin-top:14px">
+              <div class="step-nav" style="margin-top:14px;flex-direction:column;gap:10px;">
+                <button type="button" class="cta-btn step-next-btn" id="cGuestsSubmit" style="display:none;width:100%;">Submit</button>
                 <button type="button" class="ghost-btn step-back-btn" data-cgo="attend">Back</button>
               </div>
             </div>
@@ -981,36 +978,32 @@
         attendChoice = btn.dataset.attend;
         if (attendChoice === 'Yes') {
           cForm.querySelectorAll('#cChips .chip').forEach((c) => c.classList.remove('sel'));
-          document.getElementById('cOtherRow').classList.remove('show');
-          document.getElementById('cOtherNum').value = '';
+          selectedGuests = null;
+          cGuestsSubmit.style.display = 'none';
           cShowStep('guests');
         } else {
           cSubmit({ attending: 'No', guests: '' });
         }
       }));
 
-      // ---- step 4: how many people (Confirmed only) ----
+      // ---- step 4: how many people (Confirmed only) — pick a chip (1-5), then Submit ----
       const cChips = document.getElementById('cChips');
-      for (let n = 1; n <= 9; n++) {
+      const cGuestsSubmit = document.getElementById('cGuestsSubmit');
+      let selectedGuests = null;
+      for (let n = 1; n <= 5; n++) {
         const b = document.createElement('button');
         b.type = 'button'; b.className = 'chip'; b.textContent = n;
         b.addEventListener('click', () => {
           cChips.querySelectorAll('.chip').forEach((c) => c.classList.toggle('sel', c === b));
-          cSubmit({ attending: 'Yes', guests: n });
+          selectedGuests = n;
+          cGuestsSubmit.style.display = '';
         });
         cChips.appendChild(b);
       }
-      const cMore = document.createElement('button');
-      cMore.type = 'button'; cMore.className = 'chip'; cMore.textContent = '10+';
-      cMore.addEventListener('click', () => { document.getElementById('cOtherRow').classList.add('show'); document.getElementById('cOtherNum').focus(); });
-      cChips.appendChild(cMore);
-      function cSaveOther() {
-        const n = parseInt(document.getElementById('cOtherNum').value, 10);
-        if (!(n >= 1 && n <= 100)) { document.getElementById('cOtherNum').reportValidity(); return; }
-        cSubmit({ attending: 'Yes', guests: n });
-      }
-      document.getElementById('cOtherSave').addEventListener('click', cSaveOther);
-      document.getElementById('cOtherNum').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); cSaveOther(); } });
+      cGuestsSubmit.addEventListener('click', () => {
+        if (!selectedGuests) return;
+        cSubmit({ attending: 'Yes', guests: selectedGuests });
+      });
 
       // ---- submit (background write to the separate Client RSVP sheet) ----
       const cErrorMsg = document.getElementById('cErrorMsg');
