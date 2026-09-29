@@ -254,7 +254,7 @@
   .thanks-overlay.show .thanks-sub{opacity:1;transition-delay:1.4s;}
 
   /* ================= Distinguished Speakers (inside the room, above the form) ================= */
-  .speakers-section{width:100%;padding:100px 24px 56px;text-align:center;}
+  .speakers-section{width:100%;padding:20px 24px 70px;text-align:center;}
   .speakers-label{font-family:var(--cover-font);font-weight:300;font-size:clamp(11px,1.6vw,14px);
     letter-spacing:.4em;color:var(--gold-text);margin-bottom:36px;padding-left:.4em;}
   .speakers-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:40px 32px;max-width:900px;margin:0 auto;}
@@ -304,32 +304,6 @@
           <a class="link-ghost" id="navCloseLink" href="#">← Back to Overview</a>
         </div>
       </nav>
-
-      <div class="speakers-section">
-        <div class="speakers-label">Distinguished Speakers</div>
-        <div class="speakers-grid">
-          <div class="speaker">
-            <img class="speaker-photo" src="assets/speakers/romit-barat.jpg" alt="Mr. Romit Barat">
-            <div class="speaker-name">Mr. Romit Barat</div>
-            <div class="speaker-title">Director, AAFM India</div>
-          </div>
-          <div class="speaker">
-            <img class="speaker-photo" src="assets/speakers/ghazal-jain.jpg" alt="Ms. Ghazal Jain">
-            <div class="speaker-name">Ms. Ghazal Jain</div>
-            <div class="speaker-title">World Gold Council<br>Former Gold Fund Manager</div>
-          </div>
-          <div class="speaker">
-            <img class="speaker-photo" src="assets/speakers/deepak-jain.jpg" alt="Dr. Deepak Jain">
-            <div class="speaker-name">Dr. Deepak Jain</div>
-            <div class="speaker-title">Estate &amp; Succession<br>Planning Expert</div>
-          </div>
-          <div class="speaker">
-            <img class="speaker-photo" src="assets/speakers/dhruv-pawashe.jpg" alt="Mr. Dhruv Pawashe">
-            <div class="speaker-name">Mr. Dhruv Pawashe</div>
-            <div class="speaker-title">Fund Manager<br>UpperCrust PMS</div>
-          </div>
-        </div>
-      </div>
 
       <div class="page">
         <div class="form-card card reveal is-visible">
@@ -474,13 +448,13 @@
             </div>
 
             <div class="form-step" data-cstep="attend">
-              <span class="q-label">Will you be attending?</span>
+              <span class="q-label">Shall we reserve your place at the UpperCrust Wealth Conclave '26?</span>
               <div class="opt-list" id="attendList">
-                <button type="button" class="opt opt-yes" data-attend="Yes"><span class="dot y"></span>Yes, I'll be there</button>
-                <button type="button" class="opt" data-attend="No"><span class="dot n"></span>Can't make it</button>
+                <button type="button" class="opt opt-yes" data-attend="Yes"><span class="dot y"></span>Yes, reserve our seats</button>
+                <button type="button" class="opt" data-attend="No"><span class="dot n"></span>Regretfully, not this time</button>
               </div>
               <div class="step-nav" style="margin-top:14px">
-                <button type="button" class="ghost-btn step-back-btn" data-cgo="yourname">Back</button>
+                <button type="button" class="ghost-btn step-back-btn" data-cgo="yourname" id="attendBackBtn">Back</button>
               </div>
             </div>
 
@@ -504,6 +478,32 @@
               events@uppercrustwealth.com directly.
             </div>
           </form>
+        </div>
+      </div>
+
+      <div class="speakers-section">
+        <div class="speakers-label">Distinguished Speakers</div>
+        <div class="speakers-grid">
+          <div class="speaker">
+            <img class="speaker-photo" src="assets/speakers/romit-barat.jpg" alt="Mr. Romit Barat">
+            <div class="speaker-name">Mr. Romit Barat</div>
+            <div class="speaker-title">Director, AAFM India</div>
+          </div>
+          <div class="speaker">
+            <img class="speaker-photo" src="assets/speakers/ghazal-jain.jpg" alt="Ms. Ghazal Jain">
+            <div class="speaker-name">Ms. Ghazal Jain</div>
+            <div class="speaker-title">World Gold Council<br>Former Gold Fund Manager</div>
+          </div>
+          <div class="speaker">
+            <img class="speaker-photo" src="assets/speakers/deepak-jain.jpg" alt="Dr. Deepak Jain">
+            <div class="speaker-name">Dr. Deepak Jain</div>
+            <div class="speaker-title">Estate &amp; Succession<br>Planning Expert</div>
+          </div>
+          <div class="speaker">
+            <img class="speaker-photo" src="assets/speakers/dhruv-pawashe.jpg" alt="Mr. Dhruv Pawashe">
+            <div class="speaker-name">Mr. Dhruv Pawashe</div>
+            <div class="speaker-title">Fund Manager<br>UpperCrust PMS</div>
+          </div>
         </div>
       </div>
     </div>
@@ -895,10 +895,10 @@
       const skipPms = !!personalGreet; // a personalized link already knows who this is
 
       function cShowStep(name) {
-        const base = skipPms ? 2 : 3;
+        const base = skipPms ? 1 : 3; // personalized links skip PMS-name + your-name entirely
         const total = base + (attendChoice === 'Yes' ? 1 : 0);
         const rawI = cOrder.indexOf(name);
-        const i = skipPms ? rawI - 1 : rawI;
+        const i = skipPms ? rawI - 2 : rawI;
         cSteps.forEach((s) => s.classList.toggle('active', s.dataset.cstep === name));
         const shown = Math.min(i, total - 1) + 1;
         cFill.style.width = (shown / total) * 100 + '%';
@@ -909,8 +909,7 @@
 
       cForm.querySelectorAll('[data-cgo]').forEach((b) => b.addEventListener('click', () => cShowStep(b.dataset.cgo)));
       if (skipPms) {
-        const yournameBack = cForm.querySelector('[data-cstep="yourname"] .step-back-btn');
-        if (yournameBack) yournameBack.style.display = 'none';
+        document.getElementById('attendBackBtn').style.display = 'none';
       }
 
       // ---- step 1: PMS-registered name, with a live fuzzy-match dropdown ----
@@ -1055,7 +1054,7 @@
       if (skipPms) {
         pmsInput.value = personalGreet;
         pmsMatched = true;
-        cShowStep('yourname');
+        cShowStep('attend');
       } else {
         cShowStep('pms');
       }
