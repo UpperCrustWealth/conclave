@@ -157,13 +157,45 @@
     text-decoration:none;cursor:pointer;}
   .back-link:hover{color:var(--gold-text);}
 
+  /* ---- Client-link RSVP: yes/no + guest-count pickers, name autocomplete (borrowed from the RM attendance form) ---- */
+  .ctx{font-size:12.5px;color:var(--text-dim);margin-bottom:14px;line-height:1.5;}
+  .ctx b{color:#2b2417;}
+  .q-label{display:block;font-size:12.5px;font-weight:600;letter-spacing:.6px;line-height:1.4;color:#2b2417;
+    margin-bottom:10px;text-transform:uppercase;}
+  .opt-list{display:flex;flex-direction:column;gap:10px;}
+  .opt{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;text-align:left;cursor:pointer;
+    font-family:inherit;font-size:14px;color:#2b2417;
+    background:linear-gradient(135deg,#f7ecd3,#f0dfb8);border:1px solid rgba(168,118,60,.4);border-radius:8px;transition:all .2s ease;}
+  .opt:hover{background:linear-gradient(135deg,#fbf5e6,#f5e6c4);}
+  .opt.sel{border-color:var(--gold-4);background:linear-gradient(135deg,#fbf1d6,#f2dca6);box-shadow:0 0 8px rgba(168,118,60,.25);}
+  .opt .dot{flex:none;width:12px;height:12px;border-radius:50%;}
+  .dot.y{background:#3f9b5f;}.dot.n{background:#c0524a;}
+  .chips{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+  .chip{padding:14px 0;text-align:center;cursor:pointer;font-family:inherit;font-size:15px;font-weight:600;color:#2b2417;
+    background:linear-gradient(135deg,#f7ecd3,#f0dfb8);border:1px solid rgba(168,118,60,.4);border-radius:8px;transition:all .2s ease;}
+  .chip:hover,.chip.sel{border-color:var(--gold-4);background:linear-gradient(135deg,#fbf1d6,#f2dca6);}
+  .other-row{display:none;gap:10px;margin-top:12px;}
+  .other-row.show{display:flex;animation:step-in .3s ease;}
+  .other-row input{flex:1;}
+  .other-row button{flex:0 0 auto;padding:0 22px;}
+  .ac-wrap{position:relative;}
+  .ac-list{display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:5;max-height:220px;overflow-y:auto;
+    background:#fbf5e6;border:1px solid rgba(168,118,60,.4);border-radius:8px;box-shadow:0 10px 26px rgba(60,40,10,.18);}
+  .ac-list.show{display:block;}
+  .ac-item{padding:10px 14px;font-size:13.5px;color:#2b2417;cursor:pointer;}
+  .ac-item:hover,.ac-item.hi{background:rgba(168,118,60,.16);}
+  .ac-item b{color:var(--gold-4);}
+
   .result-msg{display:none;text-align:center;font-size:13px;margin-top:14px;line-height:1.6;padding:12px;border-radius:8px;}
   .result-msg.success{color:#166534;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);}
   .result-msg.error{color:#991b1b;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);}
 
   #regForm.submitted .form-step,
   #regForm.submitted .step-progress,
-  #regForm.submitted .back-link{display:none;}
+  #regForm.submitted .back-link,
+  #clientForm.submitted .form-step,
+  #clientForm.submitted .step-progress,
+  #clientForm.submitted .back-link{display:none;}
   .submitted-panel{display:none;text-align:center;}
   #regForm.submitted .submitted-panel{display:block;}
   .submitted-panel .check{font-size:40px;color:var(--gold-text);margin-bottom:10px;}
@@ -244,8 +276,8 @@
       <div class="page">
         <div class="form-card card reveal is-visible">
           <div class="form-header">
-            <h2>Request an Invitation</h2>
-            <p>UpperCrust Wealth Conclave · 2026 Edition</p>
+            <h2 id="formTitle">Request an Invitation</h2>
+            <p id="formSubtitle">UpperCrust Wealth Conclave · 2026 Edition</p>
           </div>
 
           <form id="regForm" autocomplete="off">
@@ -397,6 +429,70 @@
               events@uppercrustwealth.com directly.
             </div>
           </form>
+
+          <!-- ================= Client RSVP form (existing clients, ?client=1) ================= -->
+          <form id="clientForm" autocomplete="off" style="display:none">
+            <!-- honeypot field -->
+            <div class="hp"><label>Leave blank</label><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
+
+            <div class="step-progress">
+              <div class="step-progress-track"><div class="step-progress-fill" id="cStepProgressFill"></div></div>
+              <div class="step-progress-label" id="cStepProgressLabel">Step 1 of 3</div>
+            </div>
+
+            <div class="form-step active" data-cstep="pms">
+              <div class="input-group ac-wrap">
+                <label for="pmsName">By which name is your PMS registered?</label>
+                <input type="text" id="pmsName" required autocomplete="off" placeholder="type the name">
+                <div class="ac-list" id="pmsAc"></div>
+              </div>
+              <div class="step-nav">
+                <button type="button" class="cta-btn step-next-btn" id="pmsNext">Next</button>
+              </div>
+            </div>
+
+            <div class="form-step" data-cstep="yourname">
+              <div class="input-group">
+                <label for="yourName">Your name</label>
+                <input type="text" id="yourName" required autocomplete="off" placeholder="In case you're not the same person">
+              </div>
+              <div class="step-nav">
+                <button type="button" class="ghost-btn step-back-btn" data-cgo="pms">Back</button>
+                <button type="button" class="cta-btn step-next-btn" id="yourNameNext">Next</button>
+              </div>
+            </div>
+
+            <div class="form-step" data-cstep="attend">
+              <span class="q-label">Will you be attending?</span>
+              <div class="opt-list" id="attendList">
+                <button type="button" class="opt" data-attend="Yes"><span class="dot y"></span>Yes, I'll be there</button>
+                <button type="button" class="opt" data-attend="No"><span class="dot n"></span>Can't make it</button>
+              </div>
+              <div class="step-nav" style="margin-top:14px">
+                <button type="button" class="ghost-btn step-back-btn" data-cgo="yourname">Back</button>
+              </div>
+            </div>
+
+            <div class="form-step" data-cstep="guests">
+              <span class="q-label">How many people will attend?</span>
+              <div class="check-hint">Including yourself</div>
+              <div class="chips" id="cChips"></div>
+              <div class="other-row" id="cOtherRow">
+                <div class="input-group" style="flex:1;margin:0"><input type="number" id="cOtherNum" min="1" max="100" inputmode="numeric" placeholder="Enter number"></div>
+                <button type="button" class="cta-btn" id="cOtherSave">Save</button>
+              </div>
+              <div class="step-nav" style="margin-top:14px">
+                <button type="button" class="ghost-btn step-back-btn" data-cgo="attend">Back</button>
+              </div>
+            </div>
+
+            <a href="#" class="back-link" id="cBackLink">← Back to overview</a>
+
+            <div id="cErrorMsg" class="result-msg error">
+              Something went wrong sending your response. Please try again, or email
+              events@uppercrustwealth.com directly.
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -479,8 +575,21 @@
     document.getElementById('navCloseLink').addEventListener('click', (e) => { e.preventDefault(); closeDoor(); });
     document.getElementById('backLink').addEventListener('click', (e) => { e.preventDefault(); closeDoor(); });
 
-    // ---- Apps Script Web App endpoint (see apps-script/Code.gs + SETUP.md) ----
+    // ---- Which link is this? ?client=1 shows the short RSVP form for existing
+    // clients instead of the full prospect wizard; same door/coin-shower either way ----
+    const isClient = new URLSearchParams(location.search).get('client') === '1';
+    document.getElementById('regForm').style.display = isClient ? 'none' : '';
+    document.getElementById('clientForm').style.display = isClient ? '' : 'none';
+    if (isClient) {
+      document.getElementById('formTitle').textContent = 'Confirm Your Attendance';
+      document.getElementById('formSubtitle').textContent = 'UpperCrust Wealth Conclave · 2026 Edition';
+    }
+
+    // ---- Apps Script Web App endpoints (see apps-script/Code.gs + SETUP.md for the
+    // prospect form; the client RSVP form posts to a separate Sheet/deployment — see
+    // apps-script-client/Code.gs + SETUP-CLIENT.md — so the two never share a write path) ----
     const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbz_fEoEaNBCcx1-XPOtqDesTr5j4kyJITNfwz4aFbGQ2FU_0UfWBBt3fHf0aFYI0Eo/exec";
+    const CLIENT_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbyusCglVKDwgUIbD9lpwdZDhy6z2IpjS-rWN5Z4-MvaykYUUjCJrljMzuM0e5C0fi0/exec";
 
     const form = document.getElementById('regForm');
     const submitBtn = document.getElementById('submitBtn');
@@ -488,7 +597,7 @@
     const thanksOverlay = document.getElementById('thanksOverlay');
 
     // ---- Step wizard: reveal one field at a time ----
-    const steps = Array.from(document.querySelectorAll('.form-step'));
+    const steps = Array.from(document.querySelectorAll('#regForm .form-step'));
     const totalSteps = steps.length;
     const progressFill = document.getElementById('stepProgressFill');
     const progressLabel = document.getElementById('stepProgressLabel');
@@ -614,11 +723,12 @@
       setTimeout(() => layer.remove(), 4200);
     }
 
-    function celebrateSuccess() {
+    function celebrateSuccess(targetForm) {
+      targetForm = targetForm || form;
       spawnCoinShower(46);
       setTimeout(() => spawnCoinShower(30), 400);
       thanksOverlay.classList.add('show');
-      form.classList.add('submitted');
+      targetForm.classList.add('submitted');
 
       // continuous vibration for the whole shower
       if (navigator.vibrate) navigator.vibrate(SHOWER_DURATION_MS);
@@ -639,19 +749,21 @@
     // Under heavy load Apps Script can be slow or drop a request, so every
     // attempt has a timeout and is retried with a short back-off. Retrying is
     // safe: the backend ignores a repeat submission from the same email.
-    function postWithRetry(payload) {
+    function postWithRetry(payload, endpoint, btn) {
+      endpoint = endpoint || ENDPOINT_URL;
+      btn = btn || submitBtn;
       const MAX_ATTEMPTS = 6, TIMEOUT_MS = 30000;
       const body = JSON.stringify(payload);
       let attempt = 0;
       const slowTimer = setTimeout(() => {
-        submitBtn.textContent = 'Still submitting… please wait';
+        if (btn) btn.textContent = 'Still submitting… please wait';
       }, 8000);
       const tryOnce = () => {
         attempt++;
         const ctrl = new AbortController();
         const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
         // text/plain avoids a CORS preflight against Apps Script web apps
-        return fetch(ENDPOINT_URL, {
+        return fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: body,
@@ -748,6 +860,179 @@
           submitBtn.textContent = 'Submit Application';
         });
     });
+
+    // ============================================================
+    // Client RSVP flow — existing clients only, reached via ?client=1.
+    // Separate Google Sheet + Apps Script deployment from the prospect
+    // form above (CLIENT_ENDPOINT_URL), so nothing here ever writes to
+    // the Registrations sheet. See SETUP-CLIENT.md.
+    // ============================================================
+    const CLIENT_NAMES = ["Bharatbhai C Patel-53876", "Shrivastava Vijoy Kumar", "Hirenkumar K Thakor", "Sureshbhai Bhailalbhai Patel-64680.", "Jivrajbhai Prabhubhai Ramani.", "Vineet Kumar Jha", "Bosco India", "savitri kiran desai", "Rahul Vasava", "Shivam S Thakkar-64680.", "Pritesh L Patel", "Amrutbhai P Patel", "Yogeshkumar Patel-64680", "Indravadan Maganbhai Patel", "Mahendrabhai Ramanbhai Patel", "Paresh Domadia", "Rajnikant R Patel-64680", "Hansaben P Parmar", "Shaileshkumar Patel", "Harshil J Shah", "Kuljit Singh-64680", "Patel Palak Devendrabhai", "Bhargav C Bhatt-64680", "Indravadan A Patel-53876", "Amitkumar Jagdishbhai Patel", "Vinubhai Dalsukhbhai Vasava", "Mahendrabhai D Patel", "Sahil Bose", "Satish Meghashyam Lokhande", "Usha K Patel", "Bhupendra Prabhudas Shah", "Hetalkumar Trivedi", "Jashubhai Laxmanbhai Tadvi", "Vishal J Pithadia", "Ketan K Patel-64680", "Jagannath Das-64680", "Yashwant Janardan Dhakate", "Rajendrakumar A Pandya.", "Chirag N Patel-05346.", "Mayur Bhadani", "Vasudev G Thomre", "Jayantika Bipin Shukla", "Bhavin Rameshchandra Sonak", "Amar Ajaybhai Damania", "Dr Vinay Jain", "Shweta Jha", "Praveen V P", "Sunil B Patel-05346.", "Dilipkumar Ramanlal Bhatt", "Meghashyam Lokhande", "Mayank Amrutbhai Patel", "Pravinkumar Panchal.", "Shital Tiu", "Chandreshkumar G Maravaniya.", "Babubhai Ramani", "Purvi Dhananjay Mehta", "Devang B Shah.", "Bhushan J Vaidya", "Sohil Himmatbhai Vaghela.", "Pv Satyaprakash", "Pullela Venkata Sravanti", "Saurabh B Shetty", "Rakesh Mahesh Vyas", "Lalitha Jayaraman", "Vikram Sehgal-64680", "Tapan Abhiram Sahu", "Mukeshbhai Chimanbhai Varia.", "Divyang G Shah", "Meghal Devang Shah", "Truptiben Rahulkumar Mehta", "Mamta Ingale", "Navtej Singh Sudan", "Anuj Kumar-64680", "Pradeep B Patel", "Naresh P Jethmalani", "Bipin M Rohit", "Devjibhai Sorathia", "Shantanu Vijay Ranade", "Dhruti Balakrishna Shetty", "Chirag Modi.", "RUDRADUTTSINH JITENDRASINH RATHOD", "JANKI CHHATBAR", "KHUSH VACHHRAJANI", "Jayesh Shah-70846", "Prakash Pandya", "HARENDRA PAREKH", "Akash Patel-70846", "Tulika Saxena", "ASHA PRANAV VYAS", "ASHWINKUMAR RAI", "Rahul Kanagat", "Bharat Kantilal Dave", "Mahesh J Rao", "DEBADATTA DASGUPTA", "JANAK NIRANJAN PATEL", "Matishkumar Shantilal Bhavsar", "Arunsinh B Sisodia", "Dipti Naik", "Divyesh S Shah.", "Purvi A Mehta Bhatt", "Sunilkumar Sharma", "K V Kothandaraman Iyer", "Maltiben Shivkumar Sumant", "Sundar R.Iyer", "Hemal Rajesh Shah", "Hemalatha Sankarnarayanan", "Bhushan Kapilray Joshi.", "Rajiv Kumar Gupta.", "Dilipbhai Arvindbhai Patel-53876", "Shripad Chandrakant Bedarkar", "Bharat Prabhudas Makwana", "Nirav Parimalbhai Mankad.", "Minaxiben Sunil Panchal", "Hashmukh Ghanshyam Parikh.", "Harmanbhai Tulshibhai Patel", "Gurjeev Singh Gill.", "Snehal J Nagarsheth", "Mohammedi A Barodawala.", "Nileshbhai Bhupendrabhai Patel", "Mahendra Amritlal Soni", "Pragneshkumar P Patel.", "Siddharth Sharma-53876", "K Srinivasan", "Tribhuwan Singh", "Nileshkumar J Nagarsheth", "Vaishali Shivkumar Sumant", "Jairam Shivram Shastry", "Kamlesh P Dayalani", "Kavita Pradeep Jain.", "Dhulabhai Mangalbhai Patel", "Ravindra Mohan-53876", "Pranav K Patel.", "Jaydeep Polycolours Pvt Ltd", "Girishchandra B. Desai", "Kuldeep Sachan", "Krunal Shantilal Makwana.", "Abhay Arvind Shah", "Dhavalkumar Ghanshyam Pathak", "Umamaheswararao", "Madan Mohan Chawla", "Himanshu R Modi", "Nitin Kapil Sharma", "Kamala Rajaraman", "Vithaldas B Ukani-05346", "Jignesh Pramod Dhamecha", "Global Chemie", "Rahul Vilas Deo", "Jay Madhusudan Shah", "Dahyabhai Maganbhai Patel", "Swati Arun Karnik", "Paresh J Mistry", "Shardul Sureshkumar Bhatt", "Chirayu Dipakbhai Bhansali", "Akhil Penubothu", "Jigneshkumar A Mehta", "Abhinav B Vaidya", "Uday Anantrao Kadam", "Arvindkumar U Kiri", "Nimesh V Sharma", "Ranjit N Kshirsagar", "Madhav Popatbhai Patel", "Lakshmi Penubothu", "Dharmesh D Vyas", "Rutvij Vyas", "Amol Arun Marathe", "Maheshwari Rajkumari Deepak", "Girish Bhaskarrao Patil", "Geetha Iyer.", "DEVENDRAKUMAR RAMESHBHAI MISTRY", "Shroff Nitin Ranjitlal", "Shashank Vidyashankar Selot", "Vijay Purohit-64680", "Hardik Girishkumar Shah", "Jayesh Vijaykrishna Rana", "Swati Purav Bhatt", "Satishbhai C Luhar", "Chamanlal Vedvyas Mathrani", "Himanshu S Shah", "Shobha Brahmbhatt.", "Pallav Joshi", "P S Sajiv Kumar.", "Lalitha Srikanth", "Gunjan Jay Shah", "Pratiksha Paresh Jobalia", "Neel Jagdishbhai Ukani", "Pinak Madhusudhan Oza", "Harivadan Laxmikant Vyas.", "Rakesh Modi", "Anandkumar M Gondhiya", "Birjpal Singh Thakur", "Mayurdhvaj B Yagnik", "Kalpesh M Shah", "Miteshkumar K Patel", "Ashokkumar Ramchandra Bhatt", "Nishith N Shah", "Umesh Bhatt", "Vibha Hetal Naik", "Raj Raipancholia.", "Renu Dilbaagsingh Khera", "Ramesh M Bhavsar", "Rajendra Damodar Warriar", "Kiritkumar Parmar", "Muthukrishnan Kailash", "Hiren Ashokbhai Patel", "Adarsh Reddy-70846", "Dasharathlal Patel", "AASHIMA TAKKAR", "Shrey Mehta", "Dushyantsinh B Jhala", "NIRUPAM NANDLAL GORADIA", "Surekha Musale", "Shailesh U Dhodia", "Jayantibhai Motibhai Patel.", "Abhishek Y Gangwal.", "Anilkumar Maneklal Patel", "Hemant Chandrakant Shah", "Bharat H Pandya", "Girishbhai M Purohit.", "Ashit Narendra Mehtaji", "Ashish Gargi", "Haresh Patel - Patel Acrylic.", "Hareshbhai N Pamwani", "SAMEERA SINGH", "Abhishek Tapuriah.", "Mukesh B Dalal.", "Arjun M Mehta", "Nehal Ashish Shah-64680", "Ileshkumar R Patel", "Bhavesh C Patel-64680", "Thaker Harshal N.", "Nishit Devendrabhai Patel.", "Kavita Das", "Pushkar Kishor Shukla", "Naishad Navnitrai Pandya", "Sandeep Arunkumar Shah", "RACHANA VIRAL BHATT", "Nautilus Premise Owners Association", "Paghdar Alpesh C.", "Parthiv M Joshi.", "Ankit Rajendraprasad Pandya", "Kuldip Bharatbhai Shah", "Satya Bhushan Tikoo"];
+
+    (function () {
+      if (!isClient) return; // wiring below is harmless either way, but skip the work when not needed
+
+      const cForm = document.getElementById('clientForm');
+      const cSteps = Array.from(cForm.querySelectorAll('.form-step'));
+      const cOrder = cSteps.map((s) => s.dataset.cstep);
+      const cFill = document.getElementById('cStepProgressFill');
+      const cLabel = document.getElementById('cStepProgressLabel');
+      let attendChoice = '';
+
+      function cShowStep(name) {
+        const total = attendChoice === 'Yes' ? 4 : 3;
+        const i = cOrder.indexOf(name);
+        cSteps.forEach((s) => s.classList.toggle('active', s.dataset.cstep === name));
+        const shown = Math.min(i, total - 1) + 1;
+        cFill.style.width = (shown / total) * 100 + '%';
+        cLabel.textContent = 'Step ' + shown + ' of ' + total;
+        const field = cSteps[i].querySelector('input');
+        if (field) setTimeout(() => field.focus(), 50);
+      }
+
+      cForm.querySelectorAll('[data-cgo]').forEach((b) => b.addEventListener('click', () => cShowStep(b.dataset.cgo)));
+
+      // ---- step 1: PMS-registered name, with a live fuzzy-match dropdown ----
+      const pmsInput = document.getElementById('pmsName');
+      const pmsAc = document.getElementById('pmsAc');
+      let pmsMatched = false;
+
+      // subsequence match: every typed character must appear in the name in
+      // the same order (not necessarily contiguous), e.g. "san" matches
+      // "Sanjana" and "Sarvan Nair" alike — a light fuzzy search, not a strict prefix filter
+      function fuzzyMatch(name, query) {
+        let ni = 0;
+        const lname = name.toLowerCase();
+        for (const ch of query.toLowerCase()) {
+          ni = lname.indexOf(ch, ni);
+          if (ni === -1) return false;
+          ni++;
+        }
+        return true;
+      }
+      function highlightMatch(name, query) {
+        const lname = name.toLowerCase(), lq = query.toLowerCase();
+        let out = '', qi = 0;
+        for (let i = 0; i < name.length; i++) {
+          if (qi < lq.length && lname[i] === lq[qi]) { out += '<b>' + name[i] + '</b>'; qi++; }
+          else out += name[i];
+        }
+        return out;
+      }
+      function renderAc(query) {
+        if (!query) { pmsAc.classList.remove('show'); pmsAc.innerHTML = ''; return; }
+        const matches = CLIENT_NAMES.filter((n) => fuzzyMatch(n, query)).slice(0, 8);
+        if (!matches.length) { pmsAc.classList.remove('show'); pmsAc.innerHTML = ''; return; }
+        pmsAc.innerHTML = matches
+          .map((n) => '<div class="ac-item" data-name="' + n.replace(/"/g, '&quot;') + '">' + highlightMatch(n, query) + '</div>')
+          .join('');
+        pmsAc.classList.add('show');
+      }
+      pmsInput.addEventListener('input', () => { pmsMatched = false; renderAc(pmsInput.value.trim()); });
+      pmsAc.addEventListener('click', (e) => {
+        const item = e.target.closest('.ac-item');
+        if (!item) return;
+        pmsInput.value = item.dataset.name;
+        pmsMatched = true;
+        pmsAc.classList.remove('show');
+        pmsAc.innerHTML = '';
+      });
+      document.addEventListener('click', (e) => { if (!e.target.closest('.ac-wrap')) pmsAc.classList.remove('show'); });
+
+      function pmsNext() {
+        if (!pmsInput.value.trim()) { pmsInput.reportValidity(); return; }
+        cShowStep('yourname');
+      }
+      document.getElementById('pmsNext').addEventListener('click', pmsNext);
+      pmsInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); pmsNext(); } });
+
+      // ---- step 2: your name ----
+      const yourNameInput = document.getElementById('yourName');
+      function yourNameNext() {
+        if (!yourNameInput.value.trim()) { yourNameInput.reportValidity(); return; }
+        cShowStep('attend');
+      }
+      document.getElementById('yourNameNext').addEventListener('click', yourNameNext);
+      yourNameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); yourNameNext(); } });
+
+      // ---- step 3: attending? (No submits immediately, Yes asks headcount) ----
+      cForm.querySelectorAll('#attendList .opt').forEach((btn) => btn.addEventListener('click', () => {
+        cForm.querySelectorAll('#attendList .opt').forEach((o) => o.classList.toggle('sel', o === btn));
+        attendChoice = btn.dataset.attend;
+        if (attendChoice === 'Yes') {
+          cForm.querySelectorAll('#cChips .chip').forEach((c) => c.classList.remove('sel'));
+          document.getElementById('cOtherRow').classList.remove('show');
+          document.getElementById('cOtherNum').value = '';
+          cShowStep('guests');
+        } else {
+          cSubmit({ attending: 'No', guests: '' });
+        }
+      }));
+
+      // ---- step 4: how many people (Confirmed only) ----
+      const cChips = document.getElementById('cChips');
+      for (let n = 1; n <= 9; n++) {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'chip'; b.textContent = n;
+        b.addEventListener('click', () => {
+          cChips.querySelectorAll('.chip').forEach((c) => c.classList.toggle('sel', c === b));
+          cSubmit({ attending: 'Yes', guests: n });
+        });
+        cChips.appendChild(b);
+      }
+      const cMore = document.createElement('button');
+      cMore.type = 'button'; cMore.className = 'chip'; cMore.textContent = '10+';
+      cMore.addEventListener('click', () => { document.getElementById('cOtherRow').classList.add('show'); document.getElementById('cOtherNum').focus(); });
+      cChips.appendChild(cMore);
+      function cSaveOther() {
+        const n = parseInt(document.getElementById('cOtherNum').value, 10);
+        if (!(n >= 1 && n <= 100)) { document.getElementById('cOtherNum').reportValidity(); return; }
+        cSubmit({ attending: 'Yes', guests: n });
+      }
+      document.getElementById('cOtherSave').addEventListener('click', cSaveOther);
+      document.getElementById('cOtherNum').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); cSaveOther(); } });
+
+      // ---- submit (background write to the separate Client RSVP sheet) ----
+      const cErrorMsg = document.getElementById('cErrorMsg');
+      function cSubmit(answer) {
+        cErrorMsg.style.display = 'none';
+        if (cForm.website.value) return; // honeypot
+
+        if (CLIENT_ENDPOINT_URL.indexOf('PASTE_YOUR') === 0) {
+          cErrorMsg.textContent = 'Form is not connected to a database yet — see SETUP-CLIENT.md.';
+          cErrorMsg.style.display = 'block';
+          return;
+        }
+
+        const payload = {
+          pmsName: pmsInput.value.trim(),
+          pmsMatched: pmsMatched,
+          yourName: yourNameInput.value.trim(),
+          attending: answer.attending,
+          guests: answer.guests,
+          source: 'conclave-client-link',
+          submittedAt: new Date().toISOString()
+        };
+
+        postWithRetry(payload, CLIENT_ENDPOINT_URL, null)
+          .then(async (res) => {
+            let data = null;
+            try { data = JSON.parse(await res.text()); } catch (parseErr) { data = res.ok ? { result: 'success' } : { result: 'error', error: 'HTTP ' + res.status }; }
+            if (data && data.result === 'error') throw new Error(data.error || 'Unknown error');
+            cForm.reset();
+            celebrateSuccess(cForm);
+          })
+          .catch((err) => {
+            console.error('Client RSVP submit failed:', err);
+            cErrorMsg.textContent = 'Something went wrong sending your response. Please try again, or email events@uppercrustwealth.com directly.';
+            cErrorMsg.style.display = 'block';
+          });
+      }
+
+      document.getElementById('cBackLink').addEventListener('click', (e) => { e.preventDefault(); closeDoor(); });
+
+      cShowStep('pms');
+    })();
   </script>
 </body>
 </html>
