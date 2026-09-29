@@ -162,42 +162,10 @@
 
           <div class="step-progress">
             <div class="step-progress-track"><div class="step-progress-fill" id="stepProgressFill"></div></div>
-            <div class="step-progress-label" id="stepProgressLabel">Step 1 of 7</div>
+            <div class="step-progress-label" id="stepProgressLabel">Step 1 of 5</div>
           </div>
 
-          <div class="form-step active" data-step="0">
-            <div class="input-group">
-              <label for="fullName">May I ask your name?</label>
-              <input type="text" id="fullName" required>
-            </div>
-            <div class="step-nav">
-              <button type="button" class="cta-btn step-next-btn">Next</button>
-            </div>
-          </div>
-
-          <div class="form-step" data-step="1">
-            <div class="input-group">
-              <label for="phone">Where can we reach you directly? - phone number</label>
-              <input type="tel" id="phone" required inputmode="numeric" pattern="[0-9]{10}" maxlength="10" title="Enter a 10-digit phone number">
-            </div>
-            <div class="step-nav">
-              <button type="button" class="ghost-btn step-back-btn">Back</button>
-              <button type="button" class="cta-btn step-next-btn">Next</button>
-            </div>
-          </div>
-
-          <div class="form-step" data-step="2">
-            <div class="input-group">
-              <label for="email">Where shall correspondence find you? - Email</label>
-              <input type="email" id="email" required pattern="[^\s@]+@[^\s@]+\.[^\s@]+" title="Please enter a full email address, e.g. name@company.com" autocomplete="email">
-            </div>
-            <div class="step-nav">
-              <button type="button" class="ghost-btn step-back-btn">Back</button>
-              <button type="button" class="cta-btn step-next-btn">Next</button>
-            </div>
-          </div>
-
-          <div class="form-step" data-step="3">
+            <div class="form-step active" data-step="0">
             <div class="input-group">
               <label for="capitalPriority">When you decide where to invest your money, what matters most to you?</label>
               <select id="capitalPriority" required>
@@ -210,48 +178,11 @@
               </select>
             </div>
             <div class="step-nav">
-              <button type="button" class="ghost-btn step-back-btn">Back</button>
-              <button type="button" class="cta-btn step-next-btn">Next</button>
-            </div>
-          </div>
-
-          <div class="form-step" data-step="4">
-            <div class="input-group">
-              <label id="capitalLocationLabel">Where is most of your money invested today?</label>
-              <div class="check-hint">Tick all that apply</div>
-              <div class="check-group" id="capitalLocationGroup" role="group" aria-labelledby="capitalLocationLabel">
-                <label class="check-opt"><input type="checkbox" name="capitalLocation" value="Only stocks" data-group="1"><span>Only stocks</span></label>
-                <label class="check-opt"><input type="checkbox" name="capitalLocation" value="Stocks and mutual funds (public markets)"><span>Stocks and mutual funds (public markets)</span></label>
-                <label class="check-opt"><input type="checkbox" name="capitalLocation" value="Fixed income and bonds"><span>Fixed income and bonds</span></label>
-                <label class="check-opt"><input type="checkbox" name="capitalLocation" value="Mostly gold and silver"><span>Mostly gold and silver</span></label>
-                <label class="check-opt"><input type="checkbox" name="capitalLocation" value="Direct investing in start-ups"><span>Direct investing in start-ups</span></label>
-                <label class="check-opt"><input type="checkbox" name="capitalLocation" value="Real estate"><span>Real estate</span></label>
+                <button type="button" class="cta-btn step-next-btn">Next</button>
               </div>
-            </div>
-            <div class="step-nav">
-              <button type="button" class="ghost-btn step-back-btn">Back</button>
-              <button type="button" class="cta-btn step-next-btn">Next</button>
-            </div>
           </div>
 
-          <div class="form-step" data-step="5">
-            <div class="input-group">
-              <label for="capitalScale">Roughly how much money do you manage or invest today?</label>
-              <select id="capitalScale" required>
-                <option value="" disabled selected>Select one</option>
-                <option value="Under ₹1 Cr">Under ₹1 Cr</option>
-                <option value="₹1 Cr – ₹5 Cr">₹1 Cr – ₹5 Cr</option>
-                <option value="₹5 Cr – ₹25 Cr">₹5 Cr – ₹25 Cr</option>
-                <option value="₹25 Cr and above">₹25 Cr and above</option>
-              </select>
-            </div>
-            <div class="step-nav">
-              <button type="button" class="ghost-btn step-back-btn">Back</button>
-              <button type="button" class="cta-btn step-next-btn">Next</button>
-            </div>
-          </div>
-
-          <div class="form-step" data-step="6">
+          <div class="form-step" data-step="1">
             <div class="input-group">
               <label for="eveningIntent">What would make this morning worth your time?</label>
               <select id="eveningIntent" required>
@@ -268,7 +199,7 @@
             </div>
           </div>
 
-          <div class="form-step" data-step="7">
+          <div class="form-step" data-step="2">
             <div class="input-group">
               <label for="referredBy">Who referred you?</label>
               <select id="referredBy" required>
@@ -293,14 +224,36 @@
             </div>
             <div class="step-nav">
               <button type="button" class="ghost-btn step-back-btn">Back</button>
-              <button type="submit" class="submit-btn step-next-btn" id="submitBtn" style="display:none">Submit Application</button>
+              <button type="button" class="cta-btn step-next-btn">Next</button>
+            </div>
+          </div>
+
+          <div class="form-step" data-step="3">
+            <div class="input-group">
+              <label for="fullName">May I ask your name?</label>
+              <input type="text" id="fullName" required>
+            </div>
+            <div class="step-nav">
+                <button type="button" class="ghost-btn step-back-btn">Back</button>
+                <button type="button" class="cta-btn step-next-btn">Next</button>
+              </div>
+          </div>
+
+          <div class="form-step" data-step="4">
+            <div class="input-group">
+              <label for="phone">Where can we reach you directly? - phone number</label>
+              <input type="tel" id="phone" required inputmode="numeric" pattern="[0-9]{10}" maxlength="10" title="Enter a 10-digit phone number">
+            </div>
+            <div class="step-nav">
+              <button type="button" class="ghost-btn step-back-btn">Back</button>
+              <button type="submit" class="submit-btn step-next-btn" id="submitBtn">Submit Application</button>
             </div>
           </div>
 
           <div class="submitted-panel">
             <div class="check">✓</div>
             <h3>Application Received</h3>
-            <p>Our team will review it and follow up by email if a seat becomes
+            <p>Our team will review it and reach out if a seat becomes
               available — this is not a confirmed reservation.</p>
           </div>
 
@@ -390,17 +343,12 @@
     }
 
     showStep(0);
-    // ---- "Where is your money invested" is a tick-all-that-apply group ----
-    const locBoxes = Array.from(document.querySelectorAll('input[name="capitalLocation"]'));
-    function updateLocation() {
-      const any = locBoxes.some((b) => b.checked);
-      locBoxes[0].setCustomValidity(any ? '' : 'Please tick at least one option');
-    }
-    locBoxes.forEach((b) => b.addEventListener('change', updateLocation));
-    form.addEventListener('reset', () => setTimeout(updateLocation, 0));
-    updateLocation();
 
-    // ---- Referral step: "Who referred you?" -> follow-up question, then Submit ----
+    // ---- Referral step: "Who referred you?" -> follow-up question. This step
+    // is no longer last, so instead of hiding the Submit button we flag the
+    // dropdown itself as invalid until its follow-up is answered — goNext()
+    // already reports validity on this same field, so Next stays blocked
+    // with a clear message until the follow-up is filled in ----
     const referredBy = document.getElementById('referredBy');
     const referrerBlock = document.getElementById('referrerBlock');
     const referrerName = document.getElementById('referrerName');
@@ -416,8 +364,13 @@
       socialBlock.classList.toggle('show', isNone);
       socialMedia.disabled = !isNone;
       socialMedia.required = isNone;
-      const ready = (isPerson && referrerName.value.trim() !== '') || (isNone && socialMedia.value !== '');
-      submitBtn.style.display = ready ? '' : 'none';
+      if (isPerson && referrerName.value.trim() === '') {
+        referredBy.setCustomValidity('Please tell us who referred you');
+      } else if (isNone && socialMedia.value === '') {
+        referredBy.setCustomValidity('Please tell us how you found us');
+      } else {
+        referredBy.setCustomValidity('');
+      }
     }
     ['change', 'input'].forEach((ev) => {
       referredBy.addEventListener(ev, updateReferral);
@@ -465,7 +418,7 @@
 
     // Under heavy load Apps Script can be slow or drop a request, so every
     // attempt has a timeout and is retried with a short back-off. Retrying is
-    // safe: the backend ignores a repeat submission from the same email.
+    // safe: the backend ignores a repeat submission from the same phone number.
     function postWithRetry(payload) {
       const MAX_ATTEMPTS = 6, TIMEOUT_MS = 30000;
       const body = JSON.stringify(payload);
@@ -520,10 +473,7 @@
       const payload = {
         fullName: document.getElementById('fullName').value.trim(),
         phone: document.getElementById('phone').value.trim(),
-        email: document.getElementById('email').value.trim(),
         capitalPriority: document.getElementById('capitalPriority').value,
-        capitalLocation: locBoxes.filter((b) => b.checked).map((b) => b.value).join(', '),
-        capitalScale: document.getElementById('capitalScale').value,
         eveningIntent: document.getElementById('eveningIntent').value,
         referredBy: referredBy.value,
         referrerName: referrerName.disabled ? '' : referrerName.value.trim(),

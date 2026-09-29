@@ -36,10 +36,6 @@ function jsonOut_(obj) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-function isValidEmail_(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
 function doPost(e) {
   try {
     if (!e || !e.postData || !e.postData.contents) {
@@ -47,15 +43,14 @@ function doPost(e) {
     }
     const data = JSON.parse(e.postData.contents);
 
-    // honeypot / basic bot check happens client-side; re-validate required fields here
-    const required = ['fullName', 'phone', 'email', 'capitalPriority', 'capitalLocation', 'capitalScale', 'eveningIntent'];
+    // honeypot / basic bot check happens client-side; re-validate required fields here.
+    // The form no longer asks for email, "where is it invested" or "how much do you
+    // manage", so those are not required (and won't be sent).
+    const required = ['fullName', 'phone', 'capitalPriority', 'eveningIntent'];
     for (const field of required) {
       if (!data[field] || String(data[field]).trim() === '') {
         return jsonOut_({ result: 'error', error: 'Missing field: ' + field });
       }
-    }
-    if (!isValidEmail_(data.email)) {
-      return jsonOut_({ result: 'error', error: 'Invalid email' });
     }
 
     // Serialise concurrent submissions: only one request at a time may check
@@ -69,14 +64,15 @@ function doPost(e) {
     try {
       const sheet = getSheet_();
 
-      // simple de-dupe: same email already applied. This also makes a client
-      // retry after a timeout harmless.
+      // simple de-dupe: same phone number already applied (the form no longer
+      // collects email, so phone is now the unique key). This also makes a
+      // client retry after a timeout harmless.
       const lastRow = sheet.getLastRow();
       if (lastRow > 1) {
-        const target = data.email.toLowerCase();
-        const existingEmails = sheet.getRange(2, 4, lastRow - 1, 1).getValues();
-        for (let i = 0; i < existingEmails.length; i++) {
-          if (String(existingEmails[i][0]).toLowerCase() === target) {
+        const target = String(data.phone).trim();
+        const existingPhones = sheet.getRange(2, 3, lastRow - 1, 1).getValues();
+        for (let i = 0; i < existingPhones.length; i++) {
+          if (String(existingPhones[i][0]).trim() === target) {
             return jsonOut_({ result: 'success', note: 'duplicate — already recorded' });
           }
         }
