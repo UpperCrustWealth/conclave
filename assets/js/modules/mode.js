@@ -33,6 +33,6 @@ export function applyGreeting(mode) {
     hero.querySelector('[data-greet-name]').textContent = mode.greet;
     hero.hidden = false;
   }
-  document.querySelectorAll('[data-greet-inline]').forEach((el) => { el.textContent = mode.greet + ', '; });
-  document.title = mode.greet + ", you're invited | Wealth Conclave ’26";
+  document.querySelectorAll('[data-greet-inline]').forEach((el) => { el.textContent = mode.greet; });
+  document.title = 'Namaste, ' + mode.greet + " Ji, you're invited | Wealth Conclave ’26";
 }
