@@ -4,12 +4,13 @@ This replaces the Gemini-generated preview with a real, standalone site anyone
 can open in a normal browser — no Gemini required.
 
 ## What's in here
-- `index.html` — landing/intro page (event overview, CTA to register)
-- `register.html` — registration form (prospective guests only)
-- `assets/gold-scene.js` — the interactive 3D gold coins/bars background (touch to flip, gyroscope tilt on mobile)
-- `assets/styles.css` — shared styling
-- `assets/ucw-logo.png` — your logo
-- `apps-script/Code.gs` — backend that saves submissions into a Google Sheet (your "database")
+- `index.html` — the whole site: hero, speakers, agenda, venue, invitation form
+- `assets/css/*.css` — one stylesheet per section (tokens.css holds the brand colours)
+- `assets/js/main.js` + `assets/js/modules/*` — form logic, nav, countdown, calendar
+- `assets/js/config.js` — Apps Script endpoints and event date/venue (edit here only)
+- `assets/fonts/` — self-hosted Jost + Playfair Display (no Google Fonts call)
+- `assets/img/` — logo, favicon, speaker portraits (WebP)
+- `apps-script/Code.gs` — prospect backend (unchanged)
 
 ## 1. Set up the database (Google Sheet, ~5 minutes)
 1. Create a new Google Sheet, e.g. **"UCW Conclave Registrations"**.
@@ -27,16 +28,12 @@ can open in a normal browser — no Gemini required.
    once you give me the filter parameters.
 
 ## 2. Connect the form to the database
-1. Open `register.html`.
-2. Find this line near the bottom:
-   ```js
-   const ENDPOINT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
-   ```
-3. Replace the placeholder with the Web app URL from step 1.6.
-4. Save.
+1. Open `assets/js/config.js`.
+2. Set `endpoints.prospect` to the Web app URL from step 1.5.
+3. Save.
 
 ## 3. Test it locally
-Just double-click `index.html` to open it in a browser, click through to
+Run `python3 -m http.server` in this folder and open http://localhost:8000 (ES modules don't load from file://), click through to
 Register, submit a test entry, and confirm a row appears in the Google Sheet.
 (On desktop, the "gyroscope" tilt is simulated by mouse movement — the real
 gyroscope only activates on a phone.)

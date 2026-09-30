@@ -19,11 +19,7 @@ either of those.
    copy the `/exec` URL.
 
 ## 2. Connect the form
-In `index.html`, find:
-```js
-const CLIENT_ENDPOINT_URL = "PASTE_YOUR_CLIENT_APPS_SCRIPT_WEB_APP_URL_HERE";
-```
-and replace the placeholder with that URL.
+In `assets/js/config.js`, set `endpoints.client` to that URL.
 
 ## 3. The two links
 - **Public / prospects:** `.../index.html`
@@ -44,13 +40,10 @@ clients.
    redirect to any other link.
 
 ## Note on the autocomplete list
-`CLIENT_NAMES` in `index.html` is a **static, embedded copy** of the 242 client names — it
+`assets/js/data/client-names.js` is a **static copy**, loaded only on `?client=1` links, of the 242 client names — it
 does not call out to the RM attendance sheet or any other backend. This keeps the two
 systems fully independent (nothing to "merge"), but it also means: if the RM client list
 changes (new client added, name corrected), this list won't update on its own. Re-generate
 it from the RM form's `apps-script/Code.gs` `SEED_CLIENTS` and paste the updated array in
 before your next batch of client invites, if the list has changed meaningfully.
 
-## Still open
-- **`register.html`** in this folder appears to be an orphaned earlier draft — nothing in
-  `index.html` links to it. Left untouched for now; confirm whether it's safe to delete.

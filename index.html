@@ -1,1083 +1,457 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en-IN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UpperCrust Wealth — The Conclave</title>
-<meta name="description" content="Curated for those who appreciate the finer things in life. Vadodara, 10 October 2026.">
-<link rel="icon" type="image/png" href="assets/ucw-logo.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@200;300;400;500&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css?v=7">
-<style>
-  /* ================= Cover (the "door") ================= */
-  :root{
-    --cover-bg:#f4efe1;
-    --cover-ink:#2b2620;
-    --cover-accent:#9c3a30;
-    --cover-accent2:#6a4a8f;
-    --cover-muted:#8c8375;
-    --cover-line:rgba(43,38,32,.09);
-  }
-  html,body{background:var(--cover-bg);}
-  /* While the cover/door is showing there's no vertical scrollbar reserving
-     layout width — keeping 100vw and the leaves' percentage widths in exact
-     agreement, which is what keeps the 4-way fold seams pixel-perfect.
-     Scrolling comes back once the registration room is open (its form can
-     run taller than one screen). */
-  body{overflow-y:hidden;}
-  body.room-open{overflow-y:auto;}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>UpperCrust Wealth Conclave ’26 | 10 October, Vadodara</title>
+<meta name="description" content="A private half-day for a few families. Four speakers on wealth, gold, investing and legacy. Saturday, 10 October 2026 at Waves Club, Vadodara. By invitation only.">
+<meta name="theme-color" content="#f4efe1">
+<meta name="color-scheme" content="light only">
+<meta property="og:type" content="website">
+<meta property="og:title" content="UpperCrust Wealth Conclave ’26">
+<meta name="format-detection" content="telephone=no">
+<meta property="og:description" content="For a few families. For the decades ahead. Saturday, 10 October 2026, Waves Club, Vadodara. By invitation only.">
+<meta property="og:url" content="https://uppercrustconclave.in/">
+<meta property="og:image" content="https://uppercrustconclave.in/assets/img/ucw-logo.png">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="canonical" href="https://uppercrustconclave.in/">
 
-  #doorScene{position:fixed;inset:0;z-index:30;perspective:2200px;}
-  .door-half{position:absolute;top:0;height:100%;width:50%;overflow:hidden;
-    background:var(--cover-bg);transition:transform 2s cubic-bezier(.65,0,.35,1);}
-  .door-half.door-left{left:0;}
-  .door-half.door-right{right:0;}
-  /* Percentage-based translate (relative to the half's OWN width, not a
-     fixed px/vw value) so it slides fully clear regardless of screen
-     size — including a foldable phone's screen resizing mid-transition
-     when it's folded or unfolded. */
-  #doorScene.open .door-left{transform:translateX(-100%);}
-  #doorScene.open .door-right{transform:translateX(100%);}
+<link rel="preconnect" href="https://script.google.com">
+<link rel="preconnect" href="https://script.googleusercontent.com">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Event","name":"UpperCrust Wealth Conclave '26","startDate":"2026-10-10T09:30:00+05:30","endDate":"2026-10-10T13:30:00+05:30","eventAttendanceMode":"https://schema.org/OfflineEventAttendanceMode","eventStatus":"https://schema.org/EventScheduled","location":{"@type":"Place","name":"Waves Club","address":{"@type":"PostalAddress","addressLocality":"Vadodara","addressRegion":"Gujarat","addressCountry":"IN"}},"organizer":{"@type":"Organization","name":"UpperCrust Wealth","url":"https://uppercrustconclave.in/","email":"yash@uppercrustwealth.com","telephone":"+91-9727753518"},"performer":[{"@type":"Person","name":"Romit Barat"},{"@type":"Person","name":"Ghazal Jain"},{"@type":"Person","name":"Dhruv Pawashe"},{"@type":"Person","name":"Deepak Jain"}]}</script>
 
-  .cover-viewport{position:absolute;top:0;width:200%;height:100%;display:flex;
-    align-items:center;justify-content:center;}
+<!-- decide prospect vs client copy before first paint -->
+<script>if(/[?&]client=1(&|$)/.test(location.search))document.documentElement.classList.add('mode-client');</script>
 
-  .vlines{position:absolute;inset:0;pointer-events:none;}
-  .vlines span{position:absolute;top:0;bottom:0;width:1px;background:var(--cover-line);}
+<!-- fonts: self-hosted, the three used above the fold are preloaded -->
+<link rel="preload" href="assets/fonts/jost-latin-200-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jost-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/fonts.css?v=13">
 
-  /* Cover typography: light geometric sans (Jost, Futura-style) on the ivory
-     background, with gold accents */
-  :root{--cover-gold:#a8813f;--cover-font:'Jost','Futura','Century Gothic','Avenir Next',sans-serif;}
-  .cover-content{position:relative;z-index:1;text-align:center;width:100%;max-width:900px;box-sizing:border-box;padding:0 24px;
-    font-family:var(--cover-font);font-weight:300;}
-  .cover-title{font-family:var(--cover-font);font-weight:200;
-    font-size:clamp(46px,9vw,92px);letter-spacing:.01em;color:var(--cover-ink);line-height:1.05;margin-bottom:8px;}
-  .cover-subtitle{font-size:clamp(14px,2.6vw,26px);font-weight:300;letter-spacing:.2em;
-    color:var(--cover-gold);margin-bottom:clamp(14px,2.4vh,26px);}
-  .cover-tagline{font-size:clamp(14px,1.9vw,19px);font-weight:300;
-    color:#6b6252;line-height:1.7;margin-bottom:clamp(22px,5vh,54px);}
-  .cover-datewrap{margin-bottom:clamp(20px,4.5vh,46px);}
-  .cover-label{font-size:clamp(11px,1.5vw,15px);letter-spacing:.5em;color:#7a7160;margin-bottom:14px;padding-left:.5em;}
-  .cover-divider{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:clamp(8px,1.6vh,16px);}
-  .cover-divider span{display:block;width:clamp(50px,11vw,140px);height:1px;background:var(--cover-gold);opacity:.7;}
-  .cover-divider i{display:block;width:9px;height:9px;border:1px solid var(--cover-gold);transform:rotate(45deg);}
-  .cover-date{font-size:clamp(30px,6.4vw,66px);font-weight:300;letter-spacing:.1em;color:var(--cover-gold);white-space:nowrap;}
-  .cover-time{font-size:clamp(13px,1.9vw,19px);letter-spacing:.3em;color:var(--cover-ink);margin-bottom:12px;padding-left:.3em;}
-  .cover-venue{font-size:clamp(12px,1.7vw,17px);letter-spacing:.3em;color:#7a7160;margin-bottom:clamp(14px,2.6vh,24px);padding-left:.3em;}
-  .cover-rule{width:46px;height:1px;background:var(--cover-gold);opacity:.8;margin:0 auto 14px;}
-  .cover-invite{font-size:clamp(10px,1.4vw,14px);letter-spacing:.34em;color:var(--cover-gold);
-    margin-bottom:clamp(20px,4vh,40px);padding-left:.34em;}
+<link rel="stylesheet" href="assets/css/tokens.css?v=13">
+<link rel="stylesheet" href="assets/css/base.css?v=13">
+<link rel="stylesheet" href="assets/css/nav.css?v=13">
+<link rel="stylesheet" href="assets/css/hero.css?v=13">
+<link rel="stylesheet" href="assets/css/intro.css?v=13">
+<link rel="stylesheet" href="assets/css/speakers.css?v=13">
+<link rel="stylesheet" href="assets/css/agenda.css?v=13">
+<link rel="stylesheet" href="assets/css/audience.css?v=13">
+<link rel="stylesheet" href="assets/css/hosts-venue.css?v=13">
+<link rel="stylesheet" href="assets/css/register.css?v=13">
+<link rel="stylesheet" href="assets/css/celebrate.css?v=13">
+<link rel="stylesheet" href="assets/css/footer.css?v=13">
 
-  .enter-room-link{position:relative;overflow:hidden;isolation:isolate;
-    display:inline-flex;align-items:center;gap:10px;font-family:var(--cover-font);font-weight:500;
-    font-size:clamp(15px,2vw,19px);letter-spacing:.1em;color:#fdf0d5;text-decoration:none;
-    padding:15px 36px;border-radius:34px;border:1.5px solid rgba(230,192,127,.55);
-    background:linear-gradient(135deg,#8c2f3a 0%,#6b1f2a 55%,#4a1420 100%);
-    box-shadow:0 8px 26px rgba(74,20,32,.45),inset 0 1px 0 rgba(255,255,255,.18);
-    transition:all .3s ease;cursor:pointer;}
-  .enter-room-link::before{content:'';position:absolute;top:-60%;left:-80%;width:22%;height:220%;
-    background:linear-gradient(100deg,transparent,rgba(255,224,158,.9),transparent);
-    transform:rotate(20deg);animation:enter-shine 3s ease-in-out infinite;pointer-events:none;}
-  @keyframes enter-shine{
-    0%{left:-80%;}
-    50%{left:130%;}
-    100%{left:130%;}
-  }
-  .enter-room-link:hover,.enter-room-link.hovering{gap:16px;
-    transform:translateY(-3px);filter:brightness(1.1);
-    box-shadow:0 14px 34px rgba(74,20,32,.6),inset 0 1px 0 rgba(255,255,255,.22);}
-  .enter-room-link:active{transform:translateY(-1px);}
-  .enter-arrow{display:inline-block;transition:transform .3s ease;position:relative;z-index:1;}
-  .enter-room-link:hover .enter-arrow,.enter-room-link.hovering .enter-arrow{transform:translateX(5px);}
-
-  /* After a registration the CTA is replaced by the confirmation note */
-  body.registered .enter-room-link{display:none;}
-  .await-confirm{display:none;margin-top:6px;font-family:var(--cover-font);font-weight:300;
-    font-size:clamp(13px,1.8vw,17px);letter-spacing:.06em;color:#6b6252;}
-  body.registered .await-confirm{display:block;}
-
-
-  /* ================= Room (registration) ================= */
-  #room{visibility:hidden;}
-  #room.visible{visibility:visible;}
-
-  .form-card{width:100%;max-width:520px;padding:40px 38px;}
-  .form-header{text-align:center;margin-bottom:22px;}
-  .form-header h2{font-size:22px;color:var(--gold-text);letter-spacing:.5px;margin-bottom:8px;}
-  .form-header p{font-size:12.5px;color:var(--text-dim);line-height:1.6;}
-
-  .step-progress{margin-bottom:26px;}
-  .step-progress-track{height:5px;background:rgba(125,87,38,.15);border-radius:3px;overflow:hidden;}
-  .step-progress-fill{height:100%;width:12.5%;border-radius:3px;
-    background:linear-gradient(90deg,var(--gold-2),var(--gold-3));transition:width .45s ease;}
-  .step-progress-label{margin-top:7px;font-size:11px;letter-spacing:.5px;color:var(--text-faint);text-align:right;}
-
-  .input-group{margin-bottom:15px;text-align:left;}
-  .input-group label{display:block;font-size:14px;font-weight:600;letter-spacing:0;line-height:1.4;color:#2b2417;
-    margin-bottom:6px;text-transform:none;}
-  .input-group input,.input-group select,.input-group textarea{
-    width:100%;padding:12px 14px;background:linear-gradient(135deg,#f7ecd3,#f0dfb8);
-    border:1px solid rgba(168,118,60,.4);
-    border-radius:8px;color:#000;font-size:13.5px;outline:none;transition:all .25s ease;font-family:inherit;}
-  .input-group input::placeholder,.input-group textarea::placeholder{color:rgba(0,0,0,.55);}
-  .input-group textarea{resize:vertical;min-height:70px;}
-  .input-group select option{background:#f7ecd3;color:#000;}
-  .input-group input:focus,.input-group select:focus,.input-group textarea:focus{
-    border-color:var(--gold-4);box-shadow:0 0 10px rgba(168,118,60,.3);background:linear-gradient(135deg,#fbf5e6,#f5e6c4);}
-
-  .hp{position:absolute;left:-9999px;top:-9999px;opacity:0;height:0;width:0;overflow:hidden;}
-
-  .form-step{display:none;}
-  .form-step.active{display:block;animation:step-in .4s ease;}
-  @keyframes step-in{
-    from{opacity:0;transform:translateX(18px);}
-    to{opacity:1;transform:translateX(0);}
-  }
-  .step-nav{display:flex;gap:10px;margin-top:6px;}
-  .step-back-btn{flex:0 0 auto;}
-  .step-next-btn{flex:1;}
-
-  .submit-btn{width:100%;border-radius:8px;font-size:13px;letter-spacing:1px;margin-top:0;}
-  .submit-btn[disabled]{cursor:wait;}
-  .check-group{display:flex;flex-direction:column;gap:8px;}
-  .input-group .check-group label.check-opt{display:flex;align-items:center;gap:12px;margin:0;padding:11px 14px;
-    text-transform:none;letter-spacing:0;font-size:13.5px;font-weight:400;line-height:1.35;color:#2b2417;cursor:pointer;
-    background:linear-gradient(135deg,#f7ecd3,#f0dfb8);border:1px solid rgba(168,118,60,.4);border-radius:8px;transition:all .2s ease;}
-  .input-group .check-group label.check-opt:hover{background:linear-gradient(135deg,#fbf5e6,#f5e6c4);}
-  .input-group .check-group label.check-opt:has(input:checked){border-color:var(--gold-4);background:linear-gradient(135deg,#fbf1d6,#f2dca6);box-shadow:0 0 8px rgba(168,118,60,.25);}
-  .input-group .check-opt input[type=checkbox]{flex:none;width:18px;height:18px;padding:0;margin:0;background:none;box-shadow:none;border-radius:4px;accent-color:#a8813f;}
-  .check-hint{font-size:11px;color:#7a7160;margin:-2px 0 4px;}
-  .reveal-block{display:none;}
-  .reveal-block.show{display:block;animation:revealIn .35s ease both;}
-  @keyframes revealIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
-  .step-next-btn{border-radius:8px;font-size:13px;letter-spacing:1px;padding:12px 20px;}
-
-  .back-link{display:block;text-align:center;margin-top:18px;font-size:12px;color:var(--text-faint);
-    text-decoration:none;cursor:pointer;}
-  .back-link:hover{color:var(--gold-text);}
-
-  /* ---- Client-link RSVP: yes/no + guest-count pickers, name autocomplete (borrowed from the RM attendance form) ---- */
-  .ctx{font-size:12.5px;color:var(--text-dim);margin-bottom:14px;line-height:1.5;}
-  .ctx b{color:#2b2417;}
-  .q-label{display:block;font-size:14px;font-weight:600;letter-spacing:0;line-height:1.4;color:#2b2417;
-    margin-bottom:6px;text-transform:none;}
-  .opt-list{display:flex;flex-direction:column;gap:10px;}
-  .opt{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;text-align:left;cursor:pointer;
-    font-family:inherit;font-size:14px;color:#2b2417;
-    background:linear-gradient(135deg,#f7ecd3,#f0dfb8);border:1px solid rgba(168,118,60,.4);border-radius:8px;transition:all .2s ease;}
-  .opt:hover{background:linear-gradient(135deg,#fbf5e6,#f5e6c4);}
-  .opt.sel{border-color:var(--gold-4);background:linear-gradient(135deg,#fbf1d6,#f2dca6);box-shadow:0 0 8px rgba(168,118,60,.25);}
-  .opt .dot{flex:none;width:12px;height:12px;border-radius:50%;}
-  .dot.y{background:#3f9b5f;}.dot.n{background:#c0524a;}
-
-  /* ---- "Yes" gets the site's shiny gold CTA treatment so it stands out from "No" ---- */
-  .opt.opt-yes{position:relative;overflow:hidden;isolation:isolate;
-    background:linear-gradient(135deg,#fff4cd 0%,#f8dd93 13%,#eec167 27%,#d9a24f 40%,#c8965a 53%,#a8763c 70%,#8c6420 85%,#c8965a 100%);
-    border:1px solid rgba(255,244,210,.75);color:#1c1712;font-weight:700;
-    box-shadow:0 8px 26px rgba(168,118,60,.5),0 0 34px rgba(230,180,90,.28),
-      inset 0 2px 1px rgba(255,255,255,.9),inset 0 -4px 8px rgba(80,50,10,.3);
-    text-shadow:0 1px 0 rgba(255,255,255,.4);}
-  .opt.opt-yes:hover{background:linear-gradient(135deg,#fff4cd 0%,#f8dd93 13%,#eec167 27%,#d9a24f 40%,#c8965a 53%,#a8763c 70%,#8c6420 85%,#c8965a 100%);
-    filter:brightness(1.08) saturate(1.1);
-    box-shadow:0 12px 34px rgba(168,118,60,.6),0 0 42px rgba(230,180,90,.36),
-      inset 0 2px 1px rgba(255,255,255,.95),inset 0 -4px 8px rgba(80,50,10,.3);}
-  .opt.opt-yes.sel{border-color:rgba(255,244,210,.9);filter:brightness(1.1);}
-  .opt.opt-yes .dot.y{background:#3f9b5f;box-shadow:0 0 0 2px rgba(255,255,255,.7);}
-  .opt.opt-yes::before{content:'';position:absolute;top:-60%;left:-80%;width:16%;height:220%;
-    background:linear-gradient(100deg,transparent,rgba(255,255,255,.95),transparent);
-    transform:rotate(20deg);animation:btn-shine 3.2s ease-in-out infinite;pointer-events:none;}
-  .opt.opt-yes::after{content:'';position:absolute;top:-60%;left:-60%;width:34%;height:220%;
-    background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);
-    transform:rotate(20deg);animation:btn-shine 3.2s ease-in-out infinite;animation-delay:.35s;pointer-events:none;}
-  .chips{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
-  .chip{padding:14px 0;text-align:center;cursor:pointer;font-family:inherit;font-size:15px;font-weight:600;color:#2b2417;
-    background:linear-gradient(135deg,#f7ecd3,#f0dfb8);border:1px solid rgba(168,118,60,.4);border-radius:8px;transition:all .2s ease;}
-  .chip:hover,.chip.sel{border-color:var(--gold-4);background:linear-gradient(135deg,#fbf1d6,#f2dca6);}
-  .other-row{display:none;gap:10px;margin-top:12px;}
-  .other-row.show{display:flex;animation:step-in .3s ease;}
-  .other-row input{flex:1;}
-  .other-row button{flex:0 0 auto;padding:0 22px;}
-  .ac-wrap{position:relative;}
-  .ac-list{display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:5;max-height:220px;overflow-y:auto;
-    background:#fbf5e6;border:1px solid rgba(168,118,60,.4);border-radius:8px;box-shadow:0 10px 26px rgba(60,40,10,.18);}
-  .ac-list.show{display:block;}
-  .ac-item{padding:10px 14px;font-size:13.5px;color:#2b2417;cursor:pointer;}
-  .ac-item:hover,.ac-item.hi{background:rgba(168,118,60,.16);}
-  .ac-item b{color:var(--gold-4);}
-
-  .result-msg{display:none;text-align:center;font-size:13px;margin-top:14px;line-height:1.6;padding:12px;border-radius:8px;}
-  .result-msg.success{color:#166534;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);}
-  .result-msg.error{color:#991b1b;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);}
-
-  #regForm.submitted .form-step,
-  #regForm.submitted .step-progress,
-  #regForm.submitted .back-link,
-  #clientForm.submitted .form-step,
-  #clientForm.submitted .step-progress,
-  #clientForm.submitted .back-link{display:none;}
-  .submitted-panel{display:none;text-align:center;}
-  #regForm.submitted .submitted-panel{display:block;}
-  .submitted-panel .check{font-size:40px;color:var(--gold-text);margin-bottom:10px;}
-  .submitted-panel h3{font-size:19px;color:var(--gold-text);margin-bottom:10px;letter-spacing:.3px;}
-  .submitted-panel p{font-size:13px;color:var(--text-dim);line-height:1.7;}
-
-  .coin-shower{position:fixed;inset:0;z-index:60;pointer-events:none;overflow:hidden;}
-  .shower-coin{position:absolute;top:-40px;border-radius:50%;
-    background:radial-gradient(circle at 30% 26%,
-      #fffaea 0%, #fff0bd 10%, #f6d383 26%, #e0ab5c 44%,
-      #c1893f 62%, #96692a 80%, #6e4c1c 94%, #52380f 100%);
-    box-shadow:
-      0 4px 8px rgba(50,32,8,.5),
-      0 1px 0 1px rgba(120,80,25,.6),
-      inset 0 2px 2px rgba(255,255,255,.85),
-      inset 0 -3px 4px rgba(70,45,12,.65);
-    animation-name:coin-fall;animation-timing-function:ease-in;animation-fill-mode:forwards;}
-  .shower-coin::after{content:'';position:absolute;inset:16%;border-radius:50%;
-    border:1px solid rgba(255,248,220,.5);
-    box-shadow:inset 0 1px 1px rgba(255,255,255,.55),inset 0 -1px 2px rgba(60,38,10,.55);}
-  @keyframes coin-fall{
-    0%{transform:translateY(-10vh) rotate(0deg);opacity:0;}
-    8%{opacity:1;}
-    100%{transform:translateY(110vh) rotate(var(--rot));opacity:1;}
-  }
-  .thanks-overlay{position:fixed;inset:0;z-index:59;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    text-align:center;padding:0 24px;pointer-events:none;opacity:0;background:var(--cover-bg);
-    font-family:var(--cover-font);transition:opacity 1s ease;}
-  .thanks-overlay.show{opacity:1;transition:opacity 1.6s ease;}
-  .thanks-overlay .thanks-text{font-family:var(--cover-font);font-weight:200;font-size:clamp(34px,7vw,64px);letter-spacing:.25em;
-    text-transform:uppercase;color:#2a2620;padding-left:.25em;
-    opacity:0;transform:scale(.92);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.8,.2,1);}
-  .thanks-overlay .thanks-sub{margin-top:18px;font-weight:300;font-size:clamp(13px,2.4vw,18px);letter-spacing:.06em;
-    color:#5c5548;line-height:1.6;max-width:32em;opacity:0;transition:opacity .8s ease;}
-  .thanks-overlay.show .thanks-text{opacity:1;transform:scale(1);transition-delay:.9s;}
-  .thanks-overlay.show .thanks-sub{opacity:1;transition-delay:1.4s;}
-
-  /* ================= Distinguished Speakers (inside the room, above the form) ================= */
-  .speakers-section{width:100%;padding:20px 24px 70px;text-align:center;}
-  .speakers-label{font-family:var(--cover-font);font-weight:300;font-size:clamp(11px,1.6vw,14px);
-    letter-spacing:.4em;color:var(--gold-text);margin-bottom:36px;padding-left:.4em;}
-  .speakers-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:40px 32px;max-width:900px;margin:0 auto;}
-  .speaker{width:170px;}
-  .speaker-photo{width:150px;height:150px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 16px;
-    box-shadow:0 0 0 4px rgba(255,253,247,.9),0 0 0 5px rgba(168,118,60,.35),0 10px 26px rgba(138,100,22,.22);}
-  .speaker-name{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-weight:400;
-    font-size:17px;color:#2b2417;margin-bottom:4px;}
-  .speaker-title{font-family:var(--cover-font);font-weight:300;font-size:11.5px;color:var(--text-dim);line-height:1.4;}
-</style>
+<link rel="modulepreload" href="assets/js/main.js?v=13">
+<script type="module" src="assets/js/main.js?v=13"></script>
 </head>
 <body>
+<a class="skip" href="#register">Skip to the invitation form</a>
 
-  <!-- ================= The room: registration wizard, hidden behind the door ================= -->
-  <div id="room">
-    <div id="wave-bg">
-      <svg viewBox="0 0 1440 800" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="wg1" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#fffdf8"/>
-            <stop offset="100%" stop-color="#f2ddac"/>
-          </linearGradient>
-          <linearGradient id="wg2" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#eec583"/>
-            <stop offset="100%" stop-color="#c89a56"/>
-          </linearGradient>
-          <linearGradient id="wg3" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#dcab5e"/>
-            <stop offset="100%" stop-color="#b3823c"/>
-          </linearGradient>
-          <linearGradient id="wg4" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#a8763c"/>
-            <stop offset="100%" stop-color="#7d5726"/>
-          </linearGradient>
-        </defs>
-        <path class="wv1" fill="url(#wg1)" opacity="0.9" d="M0,240 C240,170 480,310 720,240 C960,170 1200,310 1440,240 L1440,800 L0,800 Z"/>
-        <path class="wv2" fill="url(#wg2)" opacity="0.85" d="M0,370 C260,300 420,440 680,380 C920,320 1180,460 1440,390 L1440,800 L0,800 Z"/>
-        <path class="wv3" fill="url(#wg3)" opacity="0.82" d="M0,510 C240,590 480,450 720,510 C960,570 1200,430 1440,500 L1440,800 L0,800 Z"/>
-        <path class="wv4" fill="url(#wg4)" opacity="0.8" d="M0,650 C260,580 480,700 740,650 C980,605 1200,715 1440,660 L1440,800 L0,800 Z"/>
-      </svg>
-    </div>
-
-    <div class="content-overlay">
-      <nav>
-        <div class="nav-logo"><img src="assets/ucw-logo.png" alt="UpperCrust Wealth"></div>
-        <div class="nav-links">
-          <a class="link-ghost" id="navCloseLink" href="#">← Back to Overview</a>
-        </div>
-      </nav>
-
-      <div class="page">
-        <div class="form-card card reveal is-visible">
-          <div class="form-header">
-            <h2 id="formTitle">Request an Invitation</h2>
-            <p id="formSubtitle">UpperCrust Wealth Conclave · 2026 Edition</p>
-          </div>
-
-          <form id="regForm" autocomplete="off">
-            <!-- honeypot field -->
-            <div class="hp"><label>Leave blank</label><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
-
-            <div class="step-progress">
-              <div class="step-progress-track"><div class="step-progress-fill" id="stepProgressFill"></div></div>
-              <div class="step-progress-label" id="stepProgressLabel">Step 1 of 5</div>
-            </div>
-
-            <div class="form-step active" data-step="0">
-              <div class="input-group">
-                <label for="capitalPriority">When you decide where to invest your money, what matters most to you?</label>
-                <select id="capitalPriority" required>
-                  <option value="" disabled selected>Select one</option>
-                  <option value="Strong belief in the idea">Strong belief in the idea</option>
-                  <option value="Protecting my money from losses">Protecting my money from losses</option>
-                  <option value="Steady growth over the years">Steady growth over the years</option>
-                  <option value="Access to opportunities others don't get">Access to opportunities others don't get</option>
-                  <option value="Being able to act quickly">Being able to act quickly</option>
-                </select>
-              </div>
-              <div class="step-nav">
-                <button type="button" class="cta-btn step-next-btn">Next</button>
-              </div>
-            </div>
-
-            <div class="form-step" data-step="1">
-              <div class="input-group">
-                <label for="eveningIntent">What would make this morning worth your time?</label>
-                <select id="eveningIntent" required>
-                  <option value="" disabled selected>Select one</option>
-                  <option value="New investment opportunities">New investment opportunities</option>
-                  <option value="Fresh ideas and perspectives">Fresh ideas and perspectives</option>
-                  <option value="The people I will meet in the room">The people I will meet in the room</option>
-                  <option value="A specific introduction">A specific introduction (someone I'd like to meet)</option>
-                </select>
-              </div>
-              <div class="step-nav">
-                <button type="button" class="ghost-btn step-back-btn">Back</button>
-                <button type="button" class="cta-btn step-next-btn">Next</button>
-              </div>
-            </div>
-
-            <div class="form-step" data-step="2">
-              <div class="input-group">
-                <label for="referredBy">Who referred you?</label>
-                <select id="referredBy" required>
-                  <option value="" disabled selected>Select one</option>
-                  <option value="UpperCrust Wealth employee">UpperCrust Wealth employee</option>
-                  <option value="Your friend">Your friend</option>
-                  <option value="None">None</option>
-                </select>
-              </div>
-              <div class="input-group reveal-block" id="referrerBlock">
-                <label for="referrerName">By who? - Name</label>
-                <input type="text" id="referrerName" disabled>
-              </div>
-              <div class="input-group reveal-block" id="socialBlock">
-                <label for="socialMedia">How did you find us?</label>
-                <select id="socialMedia" disabled>
-                  <option value="" disabled selected>Select one</option>
-                  <option value="Instagram">Instagram</option>
-                  <option value="Facebook">Facebook</option>
-                  <option value="LinkedIn">LinkedIn</option>
-                </select>
-              </div>
-              <div class="step-nav">
-                <button type="button" class="ghost-btn step-back-btn">Back</button>
-                <button type="button" class="cta-btn step-next-btn">Next</button>
-              </div>
-            </div>
-
-            <div class="form-step" data-step="3">
-              <div class="input-group">
-                <label for="fullName">May I ask your name?</label>
-                <input type="text" id="fullName" required>
-              </div>
-              <div class="step-nav">
-                <button type="button" class="ghost-btn step-back-btn">Back</button>
-                <button type="button" class="cta-btn step-next-btn">Next</button>
-              </div>
-            </div>
-
-            <div class="form-step" data-step="4">
-              <div class="input-group">
-                <label for="phone">Where can we reach you directly? - phone number</label>
-                <input type="tel" id="phone" required inputmode="numeric" pattern="[0-9]{10}" maxlength="10" title="Enter a 10-digit phone number">
-              </div>
-              <div class="step-nav">
-                <button type="button" class="ghost-btn step-back-btn">Back</button>
-                <button type="submit" class="submit-btn step-next-btn" id="submitBtn">Submit Application</button>
-              </div>
-            </div>
-
-
-            <a href="#" class="back-link" id="backLink">← Back to overview</a>
-
-            <div id="errorMsg" class="result-msg error">
-              Something went wrong sending your application. Please try again, or email
-              events@uppercrustwealth.com directly.
-            </div>
-          </form>
-
-          <!-- ================= Client RSVP form (existing clients, ?client=1) ================= -->
-          <form id="clientForm" autocomplete="off" style="display:none">
-            <!-- honeypot field -->
-            <div class="hp"><label>Leave blank</label><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
-
-            <div class="step-progress">
-              <div class="step-progress-track"><div class="step-progress-fill" id="cStepProgressFill"></div></div>
-              <div class="step-progress-label" id="cStepProgressLabel">Step 1 of 3</div>
-            </div>
-
-            <div class="form-step active" data-cstep="pms">
-              <div class="input-group ac-wrap">
-                <label for="pmsName">By which name is your PMS registered?</label>
-                <input type="text" id="pmsName" required autocomplete="off" placeholder="type the name">
-                <div class="ac-list" id="pmsAc"></div>
-              </div>
-              <div class="step-nav">
-                <button type="button" class="cta-btn step-next-btn" id="pmsNext">Next</button>
-              </div>
-            </div>
-
-            <div class="form-step" data-cstep="yourname">
-              <div class="input-group">
-                <label for="yourName">Your name</label>
-                <input type="text" id="yourName" required autocomplete="off" placeholder="In case you're not the same person">
-              </div>
-              <div class="step-nav">
-                <button type="button" class="ghost-btn step-back-btn" data-cgo="pms">Back</button>
-                <button type="button" class="cta-btn step-next-btn" id="yourNameNext">Next</button>
-              </div>
-            </div>
-
-            <div class="form-step" data-cstep="attend">
-              <span class="q-label">Shall we reserve your place at the UpperCrust Wealth Conclave '26?</span>
-              <div class="opt-list" id="attendList">
-                <button type="button" class="opt opt-yes" data-attend="Yes"><span class="dot y"></span>Yes, reserve our seats</button>
-                <button type="button" class="opt" data-attend="No"><span class="dot n"></span>Regretfully, not this time</button>
-              </div>
-              <div class="step-nav" style="margin-top:14px">
-                <button type="button" class="ghost-btn step-back-btn" data-cgo="yourname" id="attendBackBtn">Back</button>
-              </div>
-            </div>
-
-            <div class="form-step" data-cstep="guests">
-              <span class="q-label">How many people will attend?</span>
-              <div class="check-hint">Including yourself</div>
-              <div class="chips" id="cChips"></div>
-              <div class="step-nav" style="margin-top:14px;flex-direction:column;gap:10px;">
-                <button type="button" class="cta-btn step-next-btn" id="cGuestsSubmit" style="display:none;width:100%;">Submit</button>
-                <button type="button" class="ghost-btn step-back-btn" data-cgo="attend">Back</button>
-              </div>
-            </div>
-
-            <a href="#" class="back-link" id="cBackLink">← Back to overview</a>
-
-            <div id="cErrorMsg" class="result-msg error">
-              Something went wrong sending your response. Please try again, or email
-              events@uppercrustwealth.com directly.
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <div class="speakers-section">
-        <div class="speakers-label">Distinguished Speakers</div>
-        <div class="speakers-grid">
-          <div class="speaker">
-            <img class="speaker-photo" src="assets/speakers/romit-barat.jpg" alt="Mr. Romit Barat">
-            <div class="speaker-name">Mr. Romit Barat</div>
-            <div class="speaker-title">Director, AAFM India</div>
-          </div>
-          <div class="speaker">
-            <img class="speaker-photo" src="assets/speakers/ghazal-jain.jpg" alt="Ms. Ghazal Jain">
-            <div class="speaker-name">Ms. Ghazal Jain</div>
-            <div class="speaker-title">World Gold Council<br>Former Gold Fund Manager</div>
-          </div>
-          <div class="speaker">
-            <img class="speaker-photo" src="assets/speakers/deepak-jain.jpg" alt="Dr. Deepak Jain">
-            <div class="speaker-name">Dr. Deepak Jain</div>
-            <div class="speaker-title">Estate &amp; Succession<br>Planning Expert</div>
-          </div>
-          <div class="speaker">
-            <img class="speaker-photo" src="assets/speakers/dhruv-pawashe.jpg" alt="Mr. Dhruv Pawashe">
-            <div class="speaker-name">Mr. Dhruv Pawashe</div>
-            <div class="speaker-title">Fund Manager<br>UpperCrust PMS</div>
-          </div>
-        </div>
-      </div>
-    </div>
+<header class="nav" data-nav>
+  <div class="wrap nav-inner">
+    <a class="nav-logo" href="#top" aria-label="UpperCrust Wealth, back to top">
+      <img src="assets/img/ucw-logo.png" width="374" height="96" alt="UpperCrust Wealth" fetchpriority="high">
+    </a>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#speakers">Speakers</a>
+      <a href="#agenda">Agenda</a>
+      <a href="#venue">Venue</a>
+    </nav>
+    <a class="btn btn-primary btn-sm" href="#register"><span class="t-p">Request invitation</span><span class="t-c">Confirm attendance</span></a>
   </div>
+</header>
 
-  <div id="thanksOverlay" class="thanks-overlay"><div class="thanks-text">Thank You</div><div class="thanks-sub">Await your confirmation &mdash; our team will reach out to you.</div></div>
+<main id="main">
 
-  <!-- ================= The door: cover screen, duplicated left/right for the split-open slide effect ================= -->
-  <div id="doorScene">
-    <div class="door-half door-left">
-      <div class="cover-viewport" style="left:0;">
-            <div class="cover-content">
-              <h1 class="cover-title">UpperCrust</h1>
-              <div class="cover-subtitle">WEALTH CONCLAVE &rsquo;26</div>
-              <p class="cover-tagline">Curated for those who appreciate the finer things in life.</p>
-              <div class="cover-datewrap">
-                <div class="cover-label">SAVE THE DATE</div>
-                <div class="cover-divider"><span></span><i></i><span></span></div>
-                <div class="cover-date">10 . 10 . 2026</div>
-              </div>
-              <div class="cover-time">9:30 AM TO 1:30 PM</div>
-              <div class="cover-venue">WAVES CLUB &middot; VADODARA</div>
-              <div class="cover-rule"></div>
-              <div class="cover-invite">BY INVITATION ONLY</div>
-              <a href="#" class="enter-room-link">ENTER THE TOP 1% <span class="enter-arrow">→</span></a>
-              <div class="await-confirm">Await your confirmation &mdash; our team will reach out to you.</div>
-            </div>
+  <!-- ============ Hero: the invitation card ============ -->
+  <section class="hero" id="top" data-hero>
+    <svg class="hero-frame hero-frame--outer" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" pathLength="1"/></svg>
+    <svg class="hero-frame hero-frame--inner" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" pathLength="1"/></svg>
+
+    <div class="hero-inner">
+      <p class="hero-eyebrow">Family Wealth Office<span class="sep" aria-hidden="true">◇</span>By invitation only</p>
+      <p class="hero-greet" data-greeting hidden><span class="greet-hi">Hi <span data-greet-name></span>,</span><span class="greet-line">you are invited to</span></p>
+      <h1 class="hero-title"><span class="wm-main">UpperCrust</span><span class="wm-sub">Wealth Conclave ’26</span></h1>
+      <p class="hero-tagline">For a few families. For the decades ahead.</p>
+      <div class="ornament" aria-hidden="true"><span></span><i></i><span></span></div>
+      <dl class="hero-facts">
+        <div><dt>Date</dt><dd>Saturday, 10 October 2026</dd></div>
+        <div><dt>Time</dt><dd>9:30 am to 1:30 pm</dd></div>
+        <div><dt>Venue</dt><dd>Waves Club, Vadodara</dd></div>
+      </dl>
+      <div class="hero-actions">
+        <a class="btn btn-primary btn-shine" href="#register"><span class="t-p">Request an invitation</span><span class="t-c">Confirm your attendance</span></a>
+        <a class="btn btn-ghost" href="#agenda">See the agenda</a>
+      </div>
+      <a class="hero-lineup" href="#speakers">
+        <span class="avatars" aria-hidden="true">
+          <img src="assets/img/speakers/romit-barat.webp" width="320" height="320" alt="" decoding="async">
+          <img src="assets/img/speakers/ghazal-jain.webp" width="320" height="320" alt="" decoding="async">
+          <img src="assets/img/speakers/dhruv-pawashe.webp" width="320" height="320" alt="" decoding="async">
+          <img src="assets/img/speakers/deepak-jain.webp" width="320" height="320" alt="" decoding="async">
+        </span>
+        <span class="lineup-text">With Romit Barat, Ghazal Jain, Dhruv Pawashe and Deepak Jain</span>
+      </a>
+      <p class="hero-count" data-countdown></p>
+    </div>
+    <span data-hero-sentinel style="position:absolute;top:140px;left:0;width:1px;height:1px;"></span>
+  </section>
+
+  <!-- ============ Intro ============ -->
+  <section class="intro sec" id="about" aria-label="About the Conclave">
+    <div class="wrap intro-grid">
+      <h2 class="intro-lede">A private morning for families who plan in decades, not quarters.</h2>
+      <div class="intro-body">
+        <p>The Wealth Conclave is UpperCrust Wealth’s half-day gathering for a small circle of investors and their families. Four speakers take one question each: how wealth multiplies, where gold belongs in the next decade, how we invest, and how to pass it all on without friction.</p>
+        <p>After the last session, lunch is served in Pacific Hall. Time to talk with the speakers, with our team, and with people who think about money the way you do.</p>
       </div>
     </div>
-    <div class="door-half door-right">
-      <div class="cover-viewport" style="right:0;">
-            <div class="cover-content">
-              <h1 class="cover-title">UpperCrust</h1>
-              <div class="cover-subtitle">WEALTH CONCLAVE &rsquo;26</div>
-              <p class="cover-tagline">Curated for those who appreciate the finer things in life.</p>
-              <div class="cover-datewrap">
-                <div class="cover-label">SAVE THE DATE</div>
-                <div class="cover-divider"><span></span><i></i><span></span></div>
-                <div class="cover-date">10 . 10 . 2026</div>
-              </div>
-              <div class="cover-time">9:30 AM TO 1:30 PM</div>
-              <div class="cover-venue">WAVES CLUB &middot; VADODARA</div>
-              <div class="cover-rule"></div>
-              <div class="cover-invite">BY INVITATION ONLY</div>
-              <a href="#" class="enter-room-link">ENTER THE TOP 1% <span class="enter-arrow">→</span></a>
-              <div class="await-confirm">Await your confirmation &mdash; our team will reach out to you.</div>
-            </div>
+  </section>
+
+  <!-- ============ Speakers ============ -->
+  <section class="voices sec" id="speakers" aria-labelledby="voices-h">
+    <div class="wrap">
+      <header class="sec-head">
+        <h2 class="sec-title" id="voices-h">The voices in the room</h2>
+        <p class="sec-sub">Four speakers, one question each.</p>
+      </header>
+      <ul class="voice-list">
+        <li class="voice">
+          <figure class="voice-photo"><img src="assets/img/speakers/romit-barat.webp" width="320" height="320" loading="lazy" decoding="async" alt="Portrait of Mr. Romit Barat"></figure>
+          <h3 class="voice-name">Mr. Romit Barat</h3>
+          <p class="voice-role">Director, AAFM India</p>
+          <p class="voice-talk"><span>Session I</span>The Missing Wealth Multiplier</p>
+        </li>
+        <li class="voice">
+          <figure class="voice-photo"><img src="assets/img/speakers/ghazal-jain.webp" width="320" height="320" loading="lazy" decoding="async" alt="Portrait of Ms. Ghazal Jain"></figure>
+          <h3 class="voice-name">Ms. Ghazal Jain</h3>
+          <p class="voice-role">World Gold Council, former gold fund manager</p>
+          <p class="voice-talk"><span>Session II</span>Gold: Reimagined for the Next Decade</p>
+        </li>
+        <li class="voice">
+          <figure class="voice-photo"><img src="assets/img/speakers/dhruv-pawashe.webp" width="320" height="320" loading="lazy" decoding="async" alt="Portrait of Mr. Dhruv Pawashe"></figure>
+          <h3 class="voice-name">Mr. Dhruv Pawashe</h3>
+          <p class="voice-role">Fund Manager, UpperCrust PMS</p>
+          <p class="voice-talk"><span>Keynote</span>The UpperCrust Way</p>
+        </li>
+        <li class="voice">
+          <figure class="voice-photo"><img src="assets/img/speakers/deepak-jain.webp" width="320" height="320" loading="lazy" decoding="async" alt="Portrait of Dr. Deepak Jain"></figure>
+          <h3 class="voice-name">Dr. Deepak Jain</h3>
+          <p class="voice-role">Estate and succession planning expert</p>
+          <p class="voice-talk"><span>Session III</span>Leave a Legacy, Not a Mess</p>
+        </li>
+      </ul>
+      <p class="voices-hint" aria-hidden="true">Swipe to meet all four</p>
+    </div>
+  </section>
+
+  <!-- ============ Agenda ============ -->
+  <section class="agenda sec" id="agenda" aria-labelledby="agenda-h">
+    <div class="wrap wrap--narrow">
+      <header class="sec-head">
+        <h2 class="sec-title" id="agenda-h">Order of the day</h2>
+        <p class="sec-sub">Saturday, 10 October, Ocean Hall</p>
+      </header>
+      <ol class="timeline">
+        <li class="tl"><time class="tl-time">9:30 am</time><span class="tl-mark"></span>
+          <div class="tl-body"><p class="tl-title">Registration and welcome tea <span class="tl-note">UpperCrust PMS booth open</span></p></div>
+          <span class="tl-dur">30 min</span></li>
+        <li class="tl"><time class="tl-time">10:00 am</time><span class="tl-mark"></span>
+          <div class="tl-body"><p class="tl-title">Opening by the anchor</p></div>
+          <span class="tl-dur">5 min</span></li>
+        <li class="tl"><time class="tl-time">10:05 am</time><span class="tl-mark"></span>
+          <div class="tl-body"><p class="tl-title">Lamp lighting and welcome address <span class="tl-note">Mr. Durgesh Pandya</span></p></div>
+          <span class="tl-dur">10 min</span></li>
+        <li class="tl"><time class="tl-time">10:15 am</time><span class="tl-mark"></span>
+          <div class="tl-body"><p class="tl-title">Why this Conclave <span class="tl-note">Mr. Yash Joshi</span></p></div>
+          <span class="tl-dur">10 min</span></li>
+
+        <li class="tl tl--session"><time class="tl-time">10:25 am</time><span class="tl-mark"></span>
+          <div class="tl-body">
+            <p class="tl-label">Session I</p>
+            <h3 class="tl-heading">The Missing Wealth Multiplier</h3>
+            <p class="tl-speaker">Mr. Romit Barat <span>Director, AAFM India</span></p>
+            <p class="tl-desc">Why some portfolios compound while others only grow, and the piece most families leave out.</p>
+          </div>
+          <span class="tl-dur">45 + 5 min</span></li>
+        <li class="tl tl--session"><time class="tl-time">11:15 am</time><span class="tl-mark"></span>
+          <div class="tl-body">
+            <p class="tl-label">Session II</p>
+            <h3 class="tl-heading">Gold: Reimagined for the Next Decade</h3>
+            <p class="tl-speaker">Ms. Ghazal Jain <span>World Gold Council, former gold fund manager</span></p>
+            <p class="tl-desc">Once the family’s safe keeping, now a portfolio decision. Where gold fits over the next ten years.</p>
+          </div>
+          <span class="tl-dur">30 + 5 min</span></li>
+        <li class="tl tl--keynote"><time class="tl-time">11:50 am</time><span class="tl-mark"></span>
+          <div class="tl-body">
+            <p class="tl-label">Keynote</p>
+            <h3 class="tl-heading">The UpperCrust Way</h3>
+            <p class="tl-speaker">Mr. Dhruv Pawashe <span>Fund Manager, UpperCrust PMS</span></p>
+            <p class="tl-desc">How we think, invest and manage risk, explained by the person who runs the portfolio.</p>
+          </div>
+          <span class="tl-dur">30 + 5 min</span></li>
+        <li class="tl tl--session"><time class="tl-time">12:25 pm</time><span class="tl-mark"></span>
+          <div class="tl-body">
+            <p class="tl-label">Session III</p>
+            <h3 class="tl-heading">Leave a Legacy, Not a Mess</h3>
+            <p class="tl-speaker">Dr. Deepak Jain <span>Estate and succession planning expert</span></p>
+            <p class="tl-desc">Wills, trusts and succession, so that what you built reaches the people you built it for.</p>
+          </div>
+          <span class="tl-dur">60 min</span></li>
+
+        <li class="tl"><time class="tl-time">1:25 pm</time><span class="tl-mark"></span>
+          <div class="tl-body"><p class="tl-title">Vote of thanks and group photograph <span class="tl-note">Mr. Manish Shah</span></p></div>
+          <span class="tl-dur">5 min</span></li>
+        <li class="tl tl--lunch"><time class="tl-time">1:30 pm</time><span class="tl-mark"></span>
+          <div class="tl-body"><h3 class="tl-heading">Grand lunch <span class="tl-note">Pacific Hall</span></h3></div>
+          <span class="tl-dur"></span></li>
+      </ol>
+      <div class="agenda-cta">
+        <p><span class="t-p">Seating is limited, and every request is reviewed by our team.</span><span class="t-c">Your seats are held until you confirm.</span></p>
+        <a class="btn btn-primary" href="#register"><span class="t-p">Request an invitation</span><span class="t-c">Confirm your attendance</span></a>
       </div>
     </div>
+  </section>
+
+  <!-- ============ Audience ============ -->
+  <section class="audience sec" aria-labelledby="aud-h">
+    <div class="wrap audience-grid">
+      <header class="sec-head">
+        <h2 class="sec-title" id="aud-h">Who the Conclave is for</h2>
+        <p class="sec-sub">A room kept small on purpose.</p>
+      </header>
+      <ul class="audience-list">
+        <li class="aud"><h3 class="aud-title">Business families</h3>
+          <p class="aud-text">Planning for the next generation as carefully as the next quarter.</p></li>
+        <li class="aud"><h3 class="aud-title">Founders and promoters</h3>
+          <p class="aud-text">Wealth concentrated in one company, and ready to build beyond it.</p></li>
+        <li class="aud"><h3 class="aud-title">Senior professionals</h3>
+          <p class="aud-text">Strong income, little time, and a portfolio that deserves more attention.</p></li>
+        <li class="aud"><h3 class="aud-title">Those handing it on</h3>
+          <p class="aud-text">Moving from building wealth to living on it, and passing it forward well.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ Hosts ============ -->
+  <section class="hosts" aria-labelledby="hosts-h">
+    <div class="wrap wrap--narrow">
+      <h2 class="hosts-title" id="hosts-h">Your hosts</h2>
+      <ul class="host-list">
+        <li><p class="host-name">Mr. Durgesh Pandya</p><p class="host-role">Chairman &amp; MD</p></li>
+        <li><p class="host-name">Mr. Yash Joshi</p><p class="host-role">Executive Director</p></li>
+        <li><p class="host-name">Mr. Manish Shah</p><p class="host-role">Director</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ Venue ============ -->
+  <section class="venue sec" id="venue" aria-labelledby="venue-h">
+    <div class="wrap venue-grid">
+      <header class="sec-head">
+        <h2 class="sec-title" id="venue-h">Waves Club, Vadodara</h2>
+        <p class="sec-sub">Saturday, 10 October 2026</p>
+      </header>
+      <div>
+        <dl class="venue-list">
+          <div><dt>9:30 am</dt><dd>Registration and welcome tea<span>UpperCrust PMS booth open</span></dd></div>
+          <div><dt>10:00 am</dt><dd>Sessions in Ocean Hall<span>Three sessions and a keynote</span></dd></div>
+          <div><dt>1:30 pm</dt><dd>Grand lunch in Pacific Hall</dd></div>
+        </dl>
+        <div class="venue-actions">
+          <a class="btn btn-ghost" href="https://www.google.com/maps/search/?api=1&amp;query=Waves+Club+Vadodara" target="_blank" rel="noopener">Open in Google Maps</a>
+          <button class="btn btn-ghost" type="button" data-add-calendar>Add to calendar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Register ============ -->
+  <section class="register sec" id="register" aria-labelledby="reg-h">
+    <div class="wrap register-grid">
+      <div class="register-copy">
+        <header class="sec-head">
+          <h2 class="sec-title" id="reg-h"><span class="t-p">Request an invitation</span><span class="t-c">Confirm your attendance</span></h2>
+          <p class="sec-sub"><span class="t-p">Seating is limited.</span><span class="t-c"><span data-greet-inline></span>you are on our guest list.</span></p>
+        </header>
+        <p class="only-client">Let us know if you will join us, and how many seats to hold for your family.</p>
+        <ol class="next-steps only-prospect" aria-label="What happens next">
+          <li><strong>Send your request</strong><span>Three quick choices, then your details. Under a minute.</span></li>
+          <li><strong>We review it</strong><span>Every request is read by our team personally.</span></li>
+          <li><strong>We call to confirm</strong><span>Your seat is confirmed over a call from UpperCrust Wealth.</span></li>
+        </ol>
+        <p class="register-note">Questions? Call <a href="tel:+919727753518">+91 97277 53518</a> or write to <a href="mailto:yash@uppercrustwealth.com">yash@uppercrustwealth.com</a></p>
+      </div>
+
+      <div class="rsvp-card">
+        <header class="rsvp-head">
+          <p class="rsvp-title"><span class="t-p">Invitation request</span><span class="t-c">Your RSVP</span></p>
+          <p class="rsvp-meta"><span class="t-p">4 short steps · under a minute</span><span class="t-c">3 short steps · under a minute</span></p>
+        </header>
+        <!-- ---------- Prospect form ---------- -->
+        <form id="prospectForm" class="rsvp only-prospect" novalidate>
+          <div class="hp" aria-hidden="true"><label>Leave blank <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+          <div class="progress" aria-hidden="true"><span class="progress-bar"><i></i></span><span class="progress-text">Step 1 of 4</span></div>
+
+          <div class="step is-active" data-step="priority" role="group" aria-labelledby="q-priority">
+            <p class="q" id="q-priority" tabindex="-1">When you decide where to invest your money, what matters most to you?</p>
+            <div class="opts" data-field="capitalPriority">
+              <button type="button" class="opt" aria-pressed="false" data-value="Strong belief in the idea">Strong belief in the idea</button>
+              <button type="button" class="opt" aria-pressed="false" data-value="Protecting my money from losses">Protecting my money from losses</button>
+              <button type="button" class="opt" aria-pressed="false" data-value="Steady growth over the years">Steady growth over the years</button>
+              <button type="button" class="opt" aria-pressed="false" data-value="Access to opportunities others don't get">Access to opportunities others don’t get</button>
+              <button type="button" class="opt" aria-pressed="false" data-value="Being able to act quickly">Being able to act quickly</button>
+            </div>
+          </div>
+
+          <div class="step" data-step="intent" role="group" aria-labelledby="q-intent" hidden>
+            <p class="q" id="q-intent" tabindex="-1">What would make this morning worth your time?</p>
+            <div class="opts" data-field="eveningIntent">
+              <button type="button" class="opt" aria-pressed="false" data-value="New investment opportunities">New investment opportunities</button>
+              <button type="button" class="opt" aria-pressed="false" data-value="Fresh ideas and perspectives">Fresh ideas and perspectives</button>
+              <button type="button" class="opt" aria-pressed="false" data-value="The people I will meet in the room">The people I will meet in the room</button>
+              <button type="button" class="opt" aria-pressed="false" data-value="A specific introduction">A specific introduction to someone I’d like to meet</button>
+            </div>
+          </div>
+
+          <div class="step" data-step="referral" role="group" aria-labelledby="q-ref" hidden>
+            <p class="q" id="q-ref" tabindex="-1">Who referred you?</p>
+            <div class="opts opts--row" data-field="referredBy">
+              <button type="button" class="opt" aria-pressed="false" data-value="UpperCrust Wealth employee">Our team</button>
+              <button type="button" class="opt" aria-pressed="false" data-value="Your friend">A friend</button>
+              <button type="button" class="opt" aria-pressed="false" data-value="None">No one</button>
+            </div>
+            <div class="follow" data-follow="person" hidden>
+              <label class="field"><span class="field-label">Their name</span>
+                <input class="input" type="text" id="referrerName" autocomplete="off"></label>
+            </div>
+            <div class="follow" data-follow="none" hidden>
+              <p class="field-label">Where did you hear about the Conclave?</p>
+              <div class="opts opts--row" data-field="socialMedia">
+                <button type="button" class="opt" aria-pressed="false" data-value="Instagram">Instagram</button>
+                <button type="button" class="opt" aria-pressed="false" data-value="Facebook">Facebook</button>
+                <button type="button" class="opt" aria-pressed="false" data-value="LinkedIn">LinkedIn</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="step" data-step="contact" role="group" aria-labelledby="q-contact" hidden>
+            <p class="q" id="q-contact" tabindex="-1">Finally, may I ask your name and how we can reach you?</p>
+            <label class="field"><span class="field-label">Full name</span>
+              <input class="input" type="text" id="fullName" autocomplete="name" autocapitalize="words" placeholder="As on your invitation" required></label>
+            <label class="field"><span class="field-label">Mobile number</span>
+              <span class="phone-wrap"><span class="phone-cc" aria-hidden="true">+91</span>
+              <input class="input" type="tel" id="phone" inputmode="numeric" autocomplete="tel-national" placeholder="10-digit number" required></span></label>
+            <label class="field"><span class="field-label">Email</span>
+              <input class="input" type="email" id="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="name@example.com" required></label>
+            <p class="q-hint q-hint--after">Used only to confirm your seat and send your invitation.</p>
+          </div>
+
+          <p class="field-error" data-error aria-live="polite"></p>
+          <div class="step-actions">
+            <button type="button" class="back-btn" data-back hidden>Back</button>
+            <button type="submit" class="btn btn-primary" data-next hidden><span class="lbl">Continue</span></button>
+          </div>
+          <div class="form-error" data-form-error role="alert" hidden>
+            We could not send your request. Check your connection and try again, or call +91 97277 53518.
+            <small data-ref></small>
+          </div>
+        </form>
+
+        <div class="rsvp-done only-prospect" data-done="prospect" hidden>
+          <div class="done-mark" aria-hidden="true"></div>
+          <h3 class="done-title" data-done-title>Thank you</h3>
+          <p class="done-text" data-done-text>Your request is with our team. Await your confirmation; we will reach out to you.</p>
+          <button type="button" class="link-btn" data-done-reset>Request for someone else</button>
+        </div>
+
+        <!-- ---------- Existing-client RSVP (?client=1) ---------- -->
+        <form id="clientForm" class="rsvp only-client" novalidate>
+          <div class="hp" aria-hidden="true"><label>Leave blank <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+          <div class="progress" aria-hidden="true"><span class="progress-bar"><i></i></span><span class="progress-text">Step 1 of 3</span></div>
+
+          <div class="step is-active" data-step="pms">
+            <label class="q" for="pmsName">By which name is your PMS registered?</label>
+            <div class="ac">
+              <input class="input" type="text" id="pmsName" autocomplete="off" placeholder="Start typing the name" required>
+              <div class="ac-list" id="pmsAc" hidden></div>
+            </div>
+          </div>
+
+          <div class="step" data-step="yourname" hidden>
+            <label class="q" for="yourName">And your name?</label>
+            <p class="q-hint">In case you are replying for someone else.</p>
+            <input class="input" type="text" id="yourName" autocomplete="name" autocapitalize="words" required>
+          </div>
+
+          <div class="step" data-step="attend" role="group" aria-labelledby="q-attend" hidden>
+            <p class="q" id="q-attend" tabindex="-1">Shall we reserve your place at the Wealth Conclave ’26?</p>
+            <div class="opts" data-field="attending">
+              <button type="button" class="opt opt--yes" aria-pressed="false" data-value="Yes">Yes, reserve our seats</button>
+              <button type="button" class="opt" aria-pressed="false" data-value="No">Regretfully, not this time</button>
+            </div>
+          </div>
+
+          <div class="step" data-step="guests" role="group" aria-labelledby="q-guests" hidden>
+            <p class="q" id="q-guests" tabindex="-1">How many people will attend?</p>
+            <p class="q-hint">Including yourself.</p>
+            <div class="opts opts--chips" data-field="guests">
+              <button type="button" class="opt" aria-pressed="false" data-value="1">1</button>
+              <button type="button" class="opt" aria-pressed="false" data-value="2">2</button>
+              <button type="button" class="opt" aria-pressed="false" data-value="3">3</button>
+              <button type="button" class="opt" aria-pressed="false" data-value="4">4</button>
+              <button type="button" class="opt" aria-pressed="false" data-value="5">5</button>
+            </div>
+          </div>
+
+          <p class="field-error" data-error aria-live="polite"></p>
+          <div class="step-actions">
+            <button type="button" class="back-btn" data-back hidden>Back</button>
+            <button type="submit" class="btn btn-primary" data-next><span class="lbl">Continue</span></button>
+          </div>
+          <div class="form-error" data-form-error role="alert" hidden>
+            We could not send your response. Check your connection and try again, or call +91 97277 53518.
+            <small data-ref></small>
+          </div>
+        </form>
+
+        <div class="rsvp-done only-client" data-done="client" hidden>
+          <div class="done-mark" aria-hidden="true"></div>
+          <h3 class="done-title" data-done-title>Thank you</h3>
+          <p class="done-text" data-done-text></p>
+          <button type="button" class="link-btn" data-done-reset>Change my response</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-inner">
+      <div class="footer-brand"><img src="assets/img/ucw-logo.png" width="374" height="96" alt="UpperCrust Wealth, Family Wealth Office" loading="lazy" decoding="async"></div>
+      <p class="footer-meta">Wealth Conclave ’26, Waves Club, Vadodara<br><a href="tel:+919727753518">+91 97277 53518</a><span class="dot" aria-hidden="true"></span><a href="mailto:yash@uppercrustwealth.com">yash@uppercrustwealth.com</a></p>
+    </div>
+    <p class="footer-small">By invitation only. Attendance is confirmed by the UpperCrust Wealth team. © 2026 UpperCrust Wealth.</p>
   </div>
+</footer>
 
-  <script>
-    // ---- Door open/close: reveals the registration room without a page navigation ----
-    const doorScene = document.getElementById('doorScene');
-    const room = document.getElementById('room');
+<div class="dock" data-dock aria-hidden="true">
+  <div class="wrap dock-inner">
+    <p class="dock-text"><strong>Wealth Conclave ’26</strong><span>Saturday, 10 October, Waves Club, Vadodara</span></p>
+    <a class="btn btn-gold btn-sm" href="#register" tabindex="-1"><span class="t-p">Request invitation</span><span class="t-c">Confirm attendance</span></a>
+  </div>
+</div>
 
-    function openDoor() {
-      room.classList.add('visible');
-      document.body.classList.add('room-open');
-      doorScene.classList.add('open');
-      doorScene.style.pointerEvents = 'none';
-    }
-    function closeDoor() {
-      doorScene.style.pointerEvents = '';
-      doorScene.classList.remove('open');
-      setTimeout(() => {
-        room.classList.remove('visible');
-        document.body.classList.remove('room-open');
-      }, 2100);
-    }
-    const enterLinks = document.querySelectorAll('.enter-room-link');
-    enterLinks.forEach((el) => {
-      el.addEventListener('click', (e) => { e.preventDefault(); openDoor(); });
-      // the cover is split into two DOM copies for the door effect, so a
-      // real :hover only fires on whichever half the cursor is over —
-      // mirror it onto both copies so the reconstructed button hovers as one
-      el.addEventListener('mouseenter', () => enterLinks.forEach((l) => l.classList.add('hovering')));
-      el.addEventListener('mouseleave', () => enterLinks.forEach((l) => l.classList.remove('hovering')));
-    });
-    document.getElementById('navCloseLink').addEventListener('click', (e) => { e.preventDefault(); closeDoor(); });
-    document.getElementById('backLink').addEventListener('click', (e) => { e.preventDefault(); closeDoor(); });
+<a class="wa" data-whatsapp href="#" target="_blank" rel="noopener" hidden aria-label="Chat with us on WhatsApp">
+  <svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.7c-2 0-4-.5-5.7-1.6l-.4-.2-3.9 1 1-3.8-.3-.4A10.7 10.7 0 1 1 16 26.7zm5.9-8c-.3-.2-1.9-1-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1a8.8 8.8 0 0 1-4.3-3.8c-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.1 1.1-1.1 2.7s1.2 3.2 1.3 3.4c.2.2 2.3 3.5 5.6 4.9 2.1.9 2.9 1 4 .8.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5l-.6-.4z"/></svg>
+  <span>Chat with us</span>
+</a>
 
-    // ---- Which link is this? ?client=1 shows the short RSVP form for existing
-    // clients instead of the full prospect wizard; same door/coin-shower either way.
-    // A personalized link additionally carries &name=, e.g. "Patel Family" or
-    // "Sanjana" — when present, the page already knows who this is (skips the
-    // PMS-name lookup step and greets them by name); without it, the generic
-    // client link falls back to the typed/autocomplete PMS-name step. ----
-    const urlParams = new URLSearchParams(location.search);
-    const isClient = urlParams.get('client') === '1';
-    const personalGreet = (urlParams.get('name') || '').trim();
-    document.getElementById('regForm').style.display = isClient ? 'none' : '';
-    document.getElementById('clientForm').style.display = isClient ? '' : 'none';
-    if (isClient) {
-      document.getElementById('formTitle').textContent = personalGreet ? ('Hello, ' + personalGreet) : 'Confirm Your Attendance';
-      document.getElementById('formSubtitle').textContent = 'UpperCrust Wealth Conclave · 2026 Edition';
-    }
-
-    // ---- Apps Script Web App endpoints (see apps-script/Code.gs + SETUP.md for the
-    // prospect form; the client RSVP form posts to a separate Sheet/deployment — see
-    // apps-script-client/Code.gs + SETUP-CLIENT.md — so the two never share a write path) ----
-    const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbz_fEoEaNBCcx1-XPOtqDesTr5j4kyJITNfwz4aFbGQ2FU_0UfWBBt3fHf0aFYI0Eo/exec";
-    const CLIENT_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbyusCglVKDwgUIbD9lpwdZDhy6z2IpjS-rWN5Z4-MvaykYUUjCJrljMzuM0e5C0fi0/exec";
-
-    const form = document.getElementById('regForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const errorMsg = document.getElementById('errorMsg');
-    const thanksOverlay = document.getElementById('thanksOverlay');
-
-    // ---- Step wizard: reveal one field at a time ----
-    const steps = Array.from(document.querySelectorAll('#regForm .form-step'));
-    const totalSteps = steps.length;
-    const progressFill = document.getElementById('stepProgressFill');
-    const progressLabel = document.getElementById('stepProgressLabel');
-    let current = 0;
-
-    function showStep(i) {
-      steps.forEach((s, idx) => s.classList.toggle('active', idx === i));
-      progressFill.style.width = ((i + 1) / totalSteps) * 100 + '%';
-      progressLabel.textContent = `Step ${i + 1} of ${totalSteps}`;
-      const field = steps[i].querySelector('input, select, textarea');
-      if (field) setTimeout(() => field.focus(), 50);
-    }
-
-    function goNext() {
-      const field = steps[current].querySelector('input, select, textarea');
-      if (field && (field.hasAttribute('required') || field.dataset.group) && !field.checkValidity()) {
-        field.reportValidity();
-        return;
-      }
-      if (current < totalSteps - 1) {
-        current++;
-        showStep(current);
-      }
-    }
-
-    function goBack() {
-      if (current > 0) {
-        current--;
-        showStep(current);
-      }
-    }
-
-    steps.forEach((step) => {
-      const nextBtn = step.querySelector('.step-next-btn:not([type="submit"])');
-      const backBtn = step.querySelector('.step-back-btn');
-      if (nextBtn) nextBtn.addEventListener('click', goNext);
-      if (backBtn) backBtn.addEventListener('click', goBack);
-      const input = step.querySelector('input');
-      if (input) {
-        input.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            if (current === totalSteps - 1) { if (submitBtn.style.display !== 'none') form.requestSubmit(); }
-            else goNext();
-          }
-        });
-      }
-    });
-
-    // ---- Phone: keep only the 10 useful digits (strips spaces, +91 country
-    // code, and a leading 0 that some autofills add) so validation and the
-    // payload always carry a clean 10-digit number ----
-    const phoneInput = document.getElementById('phone');
-    if (phoneInput) {
-      phoneInput.addEventListener('input', () => {
-        let digits = phoneInput.value.replace(/\D/g, '').replace(/^0+/, '');
-        if (digits.length > 10) digits = digits.slice(-10);
-        phoneInput.value = digits;
-      });
-    }
-
-    showStep(0);
-
-    // ---- Referral step: "Who referred you?" -> follow-up question. This step
-    // is no longer last, so instead of hiding the Submit button we flag the
-    // dropdown itself as invalid until its follow-up is answered — goNext()
-    // already reports validity on this same field, so Next stays blocked
-    // with a clear message until the follow-up is filled in ----
-    const referredBy = document.getElementById('referredBy');
-    const referrerBlock = document.getElementById('referrerBlock');
-    const referrerName = document.getElementById('referrerName');
-    const socialBlock = document.getElementById('socialBlock');
-    const socialMedia = document.getElementById('socialMedia');
-    function updateReferral() {
-      const v = referredBy.value;
-      const isPerson = v === 'UpperCrust Wealth employee' || v === 'Your friend';
-      const isNone = v === 'None';
-      referrerBlock.classList.toggle('show', isPerson);
-      referrerName.disabled = !isPerson;
-      referrerName.required = isPerson;
-      socialBlock.classList.toggle('show', isNone);
-      socialMedia.disabled = !isNone;
-      socialMedia.required = isNone;
-      if (isPerson && referrerName.value.trim() === '') {
-        referredBy.setCustomValidity('Please tell us who referred you');
-      } else if (isNone && socialMedia.value === '') {
-        referredBy.setCustomValidity('Please tell us how you found us');
-      } else {
-        referredBy.setCustomValidity('');
-      }
-    }
-    ['change', 'input'].forEach((ev) => {
-      referredBy.addEventListener(ev, updateReferral);
-      referrerName.addEventListener(ev, updateReferral);
-      socialMedia.addEventListener(ev, updateReferral);
-    });
-    form.addEventListener('reset', () => setTimeout(updateReferral, 0));
-    updateReferral();
-
-
-    // ---- Coin shower + "Thank You" celebration on successful submit ----
-    const SHOWER_DURATION_MS = 4000;
-    const THANKS_HOLD_MS = 6000; // how long the Thank You screen stays before the doors close
-    function spawnCoinShower(count) {
-      const layer = document.createElement('div');
-      layer.className = 'coin-shower';
-      document.body.appendChild(layer);
-      for (let i = 0; i < count; i++) {
-        const coin = document.createElement('div');
-        coin.className = 'shower-coin';
-        const size = 12 + Math.random() * 14;
-        const duration = 2.2 + Math.random() * 1.6;
-        const delay = Math.random() * 1.1;
-        const rotDeg = (Math.random() > 0.5 ? 1 : -1) * (280 + Math.random() * 260);
-        coin.style.left = Math.random() * 100 + 'vw';
-        coin.style.width = size + 'px';
-        coin.style.height = size + 'px';
-        coin.style.animationDuration = duration + 's';
-        coin.style.animationDelay = delay + 's';
-        coin.style.setProperty('--rot', rotDeg + 'deg');
-        layer.appendChild(coin);
-      }
-      setTimeout(() => layer.remove(), 4200);
-    }
-
-    function celebrateSuccess(targetForm) {
-      targetForm = targetForm || form;
-      spawnCoinShower(46);
-      setTimeout(() => spawnCoinShower(30), 400);
-      thanksOverlay.classList.add('show');
-      targetForm.classList.add('submitted');
-
-      // continuous vibration for the whole shower
-      if (navigator.vibrate) navigator.vibrate(SHOWER_DURATION_MS);
-
-      // once the shower has played out, fold the doors shut again on their
-      // own — swap the CTA for "Save the Date" so a returning visitor sees
-      // they're already registered. A page reload has no memory of this
-      // (nothing is persisted), so it always starts fresh from the cover.
-      setTimeout(() => {
-        document.body.classList.add('registered');
-        closeDoor();
-        // the overlay is the same colour as the doors, so it can stay up until
-        // they have closed and then fade away, revealing the cover
-        setTimeout(() => thanksOverlay.classList.remove('show'), 2300);
-      }, THANKS_HOLD_MS);
-    }
-
-    // Under heavy load Apps Script can be slow or drop a request, so every
-    // attempt has a timeout and is retried with a short back-off. Retrying is
-    // safe: the backend ignores a repeat submission from the same phone number.
-    function postWithRetry(payload, endpoint, btn) {
-      endpoint = endpoint || ENDPOINT_URL;
-      btn = btn || submitBtn;
-      const MAX_ATTEMPTS = 6, TIMEOUT_MS = 30000;
-      const body = JSON.stringify(payload);
-      let attempt = 0;
-      const slowTimer = setTimeout(() => {
-        if (btn) btn.textContent = 'Still submitting… please wait';
-      }, 8000);
-      const tryOnce = () => {
-        attempt++;
-        const ctrl = new AbortController();
-        const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
-        // text/plain avoids a CORS preflight against Apps Script web apps
-        return fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: body,
-          signal: ctrl.signal
-        })
-          .then(async (res) => {
-            clearTimeout(timer);
-            if (res.status >= 500 && attempt < MAX_ATTEMPTS) throw new Error('retry');
-            // the server answers {result:'busy'} when too many people submit at once
-            let busy = false;
-            try { busy = JSON.parse(await res.clone().text()).result === 'busy'; } catch (e) {}
-            if (busy && attempt < MAX_ATTEMPTS) throw new Error('retry');
-            if (busy) throw new Error('busy');
-            return res;
-          })
-          .catch((err) => {
-            clearTimeout(timer);
-            if (attempt >= MAX_ATTEMPTS) throw err;
-            const wait = 1000 * attempt + Math.random() * 1500;
-            return new Promise((r) => setTimeout(r, wait)).then(tryOnce);
-          });
-      };
-      return tryOnce().finally(() => clearTimeout(slowTimer));
-    }
-
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      errorMsg.style.display = 'none';
-
-      // honeypot check
-      if (form.website.value) return;
-
-      if (ENDPOINT_URL.indexOf('PASTE_YOUR') === 0) {
-        errorMsg.textContent = 'Form is not connected to a database yet — see SETUP.md (ENDPOINT_URL in register.html).';
-        errorMsg.style.display = 'block';
-        return;
-      }
-
-      const payload = {
-        fullName: document.getElementById('fullName').value.trim(),
-        phone: document.getElementById('phone').value.trim(),
-        capitalPriority: document.getElementById('capitalPriority').value,
-        eveningIntent: document.getElementById('eveningIntent').value,
-        referredBy: referredBy.value,
-        referrerName: referrerName.disabled ? '' : referrerName.value.trim(),
-        socialMedia: socialMedia.disabled ? '' : socialMedia.value,
-        source: 'conclave-site',
-        submittedAt: new Date().toISOString()
-      };
-
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Submitting…';
-
-      // text/plain avoids a CORS preflight against Apps Script web apps
-      postWithRetry(payload)
-        .then(async (res) => {
-          // Apps Script writes the row to the Sheet before it finishes
-          // sending a response, and its response occasionally isn't valid
-          // JSON by the time it reaches fetch (a cold-start/redirect quirk
-          // on Google's side) even though the write already succeeded. So:
-          // a genuine HTTP failure is always an error, but an unparseable
-          // body on an otherwise-OK response is treated as success rather
-          // than incorrectly showing an error after the data was saved.
-          let data = null;
-          try {
-            data = JSON.parse(await res.text());
-          } catch (parseErr) {
-            data = res.ok ? { result: 'success' } : { result: 'error', error: 'HTTP ' + res.status };
-          }
-          if (data && data.result === 'error') {
-            throw new Error(data.error || 'Unknown error');
-          }
-          form.reset();
-          celebrateSuccess();
-        })
-        .catch((err) => {
-          // short reason code so a failure can be diagnosed from a screenshot
-          console.error('Submit failed:', err);
-          let ref = document.getElementById('errorRef');
-          if (!ref) {
-            ref = document.createElement('div');
-            ref.id = 'errorRef';
-            ref.style.cssText = 'margin-top:6px;font-size:10px;opacity:.6;';
-            errorMsg.appendChild(ref);
-          }
-          ref.textContent = 'Ref: ' + ((err && (err.name + ': ' + err.message)) || 'unknown').slice(0, 80);
-          errorMsg.style.display = 'block';
-        })
-        .finally(() => {
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Submit Application';
-        });
-    });
-
-    // ============================================================
-    // Client RSVP flow — existing clients only, reached via ?client=1.
-    // Separate Google Sheet + Apps Script deployment from the prospect
-    // form above (CLIENT_ENDPOINT_URL), so nothing here ever writes to
-    // the Registrations sheet. See SETUP-CLIENT.md.
-    // ============================================================
-    const CLIENT_NAMES = ["Bharatbhai C Patel-53876", "Shrivastava Vijoy Kumar", "Hirenkumar K Thakor", "Sureshbhai Bhailalbhai Patel-64680.", "Jivrajbhai Prabhubhai Ramani.", "Vineet Kumar Jha", "Bosco India", "savitri kiran desai", "Rahul Vasava", "Shivam S Thakkar-64680.", "Pritesh L Patel", "Amrutbhai P Patel", "Yogeshkumar Patel-64680", "Indravadan Maganbhai Patel", "Mahendrabhai Ramanbhai Patel", "Paresh Domadia", "Rajnikant R Patel-64680", "Hansaben P Parmar", "Shaileshkumar Patel", "Harshil J Shah", "Kuljit Singh-64680", "Patel Palak Devendrabhai", "Bhargav C Bhatt-64680", "Indravadan A Patel-53876", "Amitkumar Jagdishbhai Patel", "Vinubhai Dalsukhbhai Vasava", "Mahendrabhai D Patel", "Sahil Bose", "Satish Meghashyam Lokhande", "Usha K Patel", "Bhupendra Prabhudas Shah", "Hetalkumar Trivedi", "Jashubhai Laxmanbhai Tadvi", "Vishal J Pithadia", "Ketan K Patel-64680", "Jagannath Das-64680", "Yashwant Janardan Dhakate", "Rajendrakumar A Pandya.", "Chirag N Patel-05346.", "Mayur Bhadani", "Vasudev G Thomre", "Jayantika Bipin Shukla", "Bhavin Rameshchandra Sonak", "Amar Ajaybhai Damania", "Dr Vinay Jain", "Shweta Jha", "Praveen V P", "Sunil B Patel-05346.", "Dilipkumar Ramanlal Bhatt", "Meghashyam Lokhande", "Mayank Amrutbhai Patel", "Pravinkumar Panchal.", "Shital Tiu", "Chandreshkumar G Maravaniya.", "Babubhai Ramani", "Purvi Dhananjay Mehta", "Devang B Shah.", "Bhushan J Vaidya", "Sohil Himmatbhai Vaghela.", "Pv Satyaprakash", "Pullela Venkata Sravanti", "Saurabh B Shetty", "Rakesh Mahesh Vyas", "Lalitha Jayaraman", "Vikram Sehgal-64680", "Tapan Abhiram Sahu", "Mukeshbhai Chimanbhai Varia.", "Divyang G Shah", "Meghal Devang Shah", "Truptiben Rahulkumar Mehta", "Mamta Ingale", "Navtej Singh Sudan", "Anuj Kumar-64680", "Pradeep B Patel", "Naresh P Jethmalani", "Bipin M Rohit", "Devjibhai Sorathia", "Shantanu Vijay Ranade", "Dhruti Balakrishna Shetty", "Chirag Modi.", "RUDRADUTTSINH JITENDRASINH RATHOD", "JANKI CHHATBAR", "KHUSH VACHHRAJANI", "Jayesh Shah-70846", "Prakash Pandya", "HARENDRA PAREKH", "Akash Patel-70846", "Tulika Saxena", "ASHA PRANAV VYAS", "ASHWINKUMAR RAI", "Rahul Kanagat", "Bharat Kantilal Dave", "Mahesh J Rao", "DEBADATTA DASGUPTA", "JANAK NIRANJAN PATEL", "Matishkumar Shantilal Bhavsar", "Arunsinh B Sisodia", "Dipti Naik", "Divyesh S Shah.", "Purvi A Mehta Bhatt", "Sunilkumar Sharma", "K V Kothandaraman Iyer", "Maltiben Shivkumar Sumant", "Sundar R.Iyer", "Hemal Rajesh Shah", "Hemalatha Sankarnarayanan", "Bhushan Kapilray Joshi.", "Rajiv Kumar Gupta.", "Dilipbhai Arvindbhai Patel-53876", "Shripad Chandrakant Bedarkar", "Bharat Prabhudas Makwana", "Nirav Parimalbhai Mankad.", "Minaxiben Sunil Panchal", "Hashmukh Ghanshyam Parikh.", "Harmanbhai Tulshibhai Patel", "Gurjeev Singh Gill.", "Snehal J Nagarsheth", "Mohammedi A Barodawala.", "Nileshbhai Bhupendrabhai Patel", "Mahendra Amritlal Soni", "Pragneshkumar P Patel.", "Siddharth Sharma-53876", "K Srinivasan", "Tribhuwan Singh", "Nileshkumar J Nagarsheth", "Vaishali Shivkumar Sumant", "Jairam Shivram Shastry", "Kamlesh P Dayalani", "Kavita Pradeep Jain.", "Dhulabhai Mangalbhai Patel", "Ravindra Mohan-53876", "Pranav K Patel.", "Jaydeep Polycolours Pvt Ltd", "Girishchandra B. Desai", "Kuldeep Sachan", "Krunal Shantilal Makwana.", "Abhay Arvind Shah", "Dhavalkumar Ghanshyam Pathak", "Umamaheswararao", "Madan Mohan Chawla", "Himanshu R Modi", "Nitin Kapil Sharma", "Kamala Rajaraman", "Vithaldas B Ukani-05346", "Jignesh Pramod Dhamecha", "Global Chemie", "Rahul Vilas Deo", "Jay Madhusudan Shah", "Dahyabhai Maganbhai Patel", "Swati Arun Karnik", "Paresh J Mistry", "Shardul Sureshkumar Bhatt", "Chirayu Dipakbhai Bhansali", "Akhil Penubothu", "Jigneshkumar A Mehta", "Abhinav B Vaidya", "Uday Anantrao Kadam", "Arvindkumar U Kiri", "Nimesh V Sharma", "Ranjit N Kshirsagar", "Madhav Popatbhai Patel", "Lakshmi Penubothu", "Dharmesh D Vyas", "Rutvij Vyas", "Amol Arun Marathe", "Maheshwari Rajkumari Deepak", "Girish Bhaskarrao Patil", "Geetha Iyer.", "DEVENDRAKUMAR RAMESHBHAI MISTRY", "Shroff Nitin Ranjitlal", "Shashank Vidyashankar Selot", "Vijay Purohit-64680", "Hardik Girishkumar Shah", "Jayesh Vijaykrishna Rana", "Swati Purav Bhatt", "Satishbhai C Luhar", "Chamanlal Vedvyas Mathrani", "Himanshu S Shah", "Shobha Brahmbhatt.", "Pallav Joshi", "P S Sajiv Kumar.", "Lalitha Srikanth", "Gunjan Jay Shah", "Pratiksha Paresh Jobalia", "Neel Jagdishbhai Ukani", "Pinak Madhusudhan Oza", "Harivadan Laxmikant Vyas.", "Rakesh Modi", "Anandkumar M Gondhiya", "Birjpal Singh Thakur", "Mayurdhvaj B Yagnik", "Kalpesh M Shah", "Miteshkumar K Patel", "Ashokkumar Ramchandra Bhatt", "Nishith N Shah", "Umesh Bhatt", "Vibha Hetal Naik", "Raj Raipancholia.", "Renu Dilbaagsingh Khera", "Ramesh M Bhavsar", "Rajendra Damodar Warriar", "Kiritkumar Parmar", "Muthukrishnan Kailash", "Hiren Ashokbhai Patel", "Adarsh Reddy-70846", "Dasharathlal Patel", "AASHIMA TAKKAR", "Shrey Mehta", "Dushyantsinh B Jhala", "NIRUPAM NANDLAL GORADIA", "Surekha Musale", "Shailesh U Dhodia", "Jayantibhai Motibhai Patel.", "Abhishek Y Gangwal.", "Anilkumar Maneklal Patel", "Hemant Chandrakant Shah", "Bharat H Pandya", "Girishbhai M Purohit.", "Ashit Narendra Mehtaji", "Ashish Gargi", "Haresh Patel - Patel Acrylic.", "Hareshbhai N Pamwani", "SAMEERA SINGH", "Abhishek Tapuriah.", "Mukesh B Dalal.", "Arjun M Mehta", "Nehal Ashish Shah-64680", "Ileshkumar R Patel", "Bhavesh C Patel-64680", "Thaker Harshal N.", "Nishit Devendrabhai Patel.", "Kavita Das", "Pushkar Kishor Shukla", "Naishad Navnitrai Pandya", "Sandeep Arunkumar Shah", "RACHANA VIRAL BHATT", "Nautilus Premise Owners Association", "Paghdar Alpesh C.", "Parthiv M Joshi.", "Ankit Rajendraprasad Pandya", "Kuldip Bharatbhai Shah", "Satya Bhushan Tikoo"];
-
-    (function () {
-      if (!isClient) return; // wiring below is harmless either way, but skip the work when not needed
-
-      const cForm = document.getElementById('clientForm');
-      const cSteps = Array.from(cForm.querySelectorAll('.form-step'));
-      const cOrder = cSteps.map((s) => s.dataset.cstep);
-      const cFill = document.getElementById('cStepProgressFill');
-      const cLabel = document.getElementById('cStepProgressLabel');
-      let attendChoice = '';
-      const skipPms = !!personalGreet; // a personalized link already knows who this is
-
-      function cShowStep(name) {
-        const base = skipPms ? 1 : 3; // personalized links skip PMS-name + your-name entirely
-        const total = base + (attendChoice === 'Yes' ? 1 : 0);
-        const rawI = cOrder.indexOf(name);
-        const i = skipPms ? rawI - 2 : rawI;
-        cSteps.forEach((s) => s.classList.toggle('active', s.dataset.cstep === name));
-        const shown = Math.min(i, total - 1) + 1;
-        cFill.style.width = (shown / total) * 100 + '%';
-        cLabel.textContent = 'Step ' + shown + ' of ' + total;
-        const field = cSteps[rawI].querySelector('input');
-        if (field) setTimeout(() => field.focus(), 50);
-      }
-
-      cForm.querySelectorAll('[data-cgo]').forEach((b) => b.addEventListener('click', () => cShowStep(b.dataset.cgo)));
-      if (skipPms) {
-        document.getElementById('attendBackBtn').style.display = 'none';
-      }
-
-      // ---- step 1: PMS-registered name, with a live fuzzy-match dropdown ----
-      const pmsInput = document.getElementById('pmsName');
-      const pmsAc = document.getElementById('pmsAc');
-      let pmsMatched = false;
-
-      // subsequence match: every typed character must appear in the name in
-      // the same order (not necessarily contiguous), e.g. "san" matches
-      // "Sanjana" and "Sarvan Nair" alike — a light fuzzy search, not a strict prefix filter
-      function fuzzyMatch(name, query) {
-        let ni = 0;
-        const lname = name.toLowerCase();
-        for (const ch of query.toLowerCase()) {
-          ni = lname.indexOf(ch, ni);
-          if (ni === -1) return false;
-          ni++;
-        }
-        return true;
-      }
-      function highlightMatch(name, query) {
-        const lname = name.toLowerCase(), lq = query.toLowerCase();
-        let out = '', qi = 0;
-        for (let i = 0; i < name.length; i++) {
-          if (qi < lq.length && lname[i] === lq[qi]) { out += '<b>' + name[i] + '</b>'; qi++; }
-          else out += name[i];
-        }
-        return out;
-      }
-      function renderAc(query) {
-        if (!query) { pmsAc.classList.remove('show'); pmsAc.innerHTML = ''; return; }
-        const matches = CLIENT_NAMES.filter((n) => fuzzyMatch(n, query)).slice(0, 8);
-        if (!matches.length) { pmsAc.classList.remove('show'); pmsAc.innerHTML = ''; return; }
-        pmsAc.innerHTML = matches
-          .map((n) => '<div class="ac-item" data-name="' + n.replace(/"/g, '&quot;') + '">' + highlightMatch(n, query) + '</div>')
-          .join('');
-        pmsAc.classList.add('show');
-      }
-      pmsInput.addEventListener('input', () => { pmsMatched = false; renderAc(pmsInput.value.trim()); });
-      pmsAc.addEventListener('click', (e) => {
-        const item = e.target.closest('.ac-item');
-        if (!item) return;
-        pmsInput.value = item.dataset.name;
-        pmsMatched = true;
-        pmsAc.classList.remove('show');
-        pmsAc.innerHTML = '';
-      });
-      document.addEventListener('click', (e) => { if (!e.target.closest('.ac-wrap')) pmsAc.classList.remove('show'); });
-
-      function pmsNext() {
-        if (!pmsInput.value.trim()) { pmsInput.reportValidity(); return; }
-        cShowStep('yourname');
-      }
-      document.getElementById('pmsNext').addEventListener('click', pmsNext);
-      pmsInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); pmsNext(); } });
-
-      // ---- step 2: your name ----
-      const yourNameInput = document.getElementById('yourName');
-      function yourNameNext() {
-        if (!yourNameInput.value.trim()) { yourNameInput.reportValidity(); return; }
-        cShowStep('attend');
-      }
-      document.getElementById('yourNameNext').addEventListener('click', yourNameNext);
-      yourNameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); yourNameNext(); } });
-
-      // ---- step 3: attending? (No submits immediately, Yes asks headcount) ----
-      cForm.querySelectorAll('#attendList .opt').forEach((btn) => btn.addEventListener('click', () => {
-        cForm.querySelectorAll('#attendList .opt').forEach((o) => o.classList.toggle('sel', o === btn));
-        attendChoice = btn.dataset.attend;
-        if (attendChoice === 'Yes') {
-          cForm.querySelectorAll('#cChips .chip').forEach((c) => c.classList.remove('sel'));
-          selectedGuests = null;
-          cGuestsSubmit.style.display = 'none';
-          cShowStep('guests');
-        } else {
-          cSubmit({ attending: 'No', guests: '' });
-        }
-      }));
-
-      // ---- step 4: how many people (Confirmed only) — pick a chip (1-5), then Submit ----
-      const cChips = document.getElementById('cChips');
-      const cGuestsSubmit = document.getElementById('cGuestsSubmit');
-      let selectedGuests = null;
-      for (let n = 1; n <= 5; n++) {
-        const b = document.createElement('button');
-        b.type = 'button'; b.className = 'chip'; b.textContent = n;
-        b.addEventListener('click', () => {
-          cChips.querySelectorAll('.chip').forEach((c) => c.classList.toggle('sel', c === b));
-          selectedGuests = n;
-          cGuestsSubmit.style.display = '';
-        });
-        cChips.appendChild(b);
-      }
-      cGuestsSubmit.addEventListener('click', () => {
-        if (!selectedGuests) return;
-        cGuestsSubmit.disabled = true;
-        cGuestsSubmit.textContent = 'Submitting…';
-        cSubmit({ attending: 'Yes', guests: selectedGuests }, cGuestsSubmit);
-      });
-
-      // ---- submit (background write to the separate Client RSVP sheet) ----
-      const cErrorMsg = document.getElementById('cErrorMsg');
-      function cSubmit(answer, btn) {
-        cErrorMsg.style.display = 'none';
-        if (cForm.website.value) return; // honeypot
-
-        if (CLIENT_ENDPOINT_URL.indexOf('PASTE_YOUR') === 0) {
-          cErrorMsg.textContent = 'Form is not connected to a database yet — see SETUP-CLIENT.md.';
-          cErrorMsg.style.display = 'block';
-          return;
-        }
-
-        const payload = {
-          pmsName: pmsInput.value.trim(),
-          pmsMatched: pmsMatched,
-          yourName: yourNameInput.value.trim(),
-          attending: answer.attending,
-          guests: answer.guests,
-          source: 'conclave-client-link',
-          submittedAt: new Date().toISOString()
-        };
-
-        // Apps Script writes the row before it finishes sending a response, and a
-        // slow/flaky connection can hold that response up well past what feels
-        // instant — especially on mobile. So the celebration fires optimistically
-        // after 3s even if the network is still working, rather than making the
-        // visitor stare at a spinner. The real request (with its own retries) keeps
-        // running in the background regardless, via the shared submittedAt dedupe key.
-        let settled = false;
-        function celebrateOnce() {
-          if (settled) return;
-          settled = true;
-          clearTimeout(optimisticTimer);
-          cForm.reset();
-          celebrateSuccess(cForm);
-        }
-        const optimisticTimer = setTimeout(celebrateOnce, 3000);
-
-        postWithRetry(payload, CLIENT_ENDPOINT_URL, btn || null)
-          .then(async (res) => {
-            let data = null;
-            try { data = JSON.parse(await res.text()); } catch (parseErr) { data = res.ok ? { result: 'success' } : { result: 'error', error: 'HTTP ' + res.status }; }
-            if (data && data.result === 'error') throw new Error(data.error || 'Unknown error');
-            celebrateOnce();
-          })
-          .catch((err) => {
-            if (settled) {
-              // already celebrated optimistically; the write almost certainly
-              // still went through, so don't undo the "Thank You" over this
-              console.error('Client RSVP: background confirmation failed after optimistic success:', err);
-              return;
-            }
-            console.error('Client RSVP submit failed:', err);
-            clearTimeout(optimisticTimer);
-            if (btn) { btn.disabled = false; btn.textContent = 'Submit'; }
-            cErrorMsg.textContent = 'Something went wrong sending your response. Please try again, or email events@uppercrustwealth.com directly.';
-            cErrorMsg.style.display = 'block';
-          });
-      }
-
-      document.getElementById('cBackLink').addEventListener('click', (e) => { e.preventDefault(); closeDoor(); });
-
-      if (skipPms) {
-        pmsInput.value = personalGreet;
-        pmsMatched = true;
-        cShowStep('attend');
-      } else {
-        cShowStep('pms');
-      }
-    })();
-  </script>
+<div class="thanks" data-thanks hidden aria-live="assertive">
+  <div class="ornament" aria-hidden="true"><span></span><i></i><span></span></div>
+  <p class="thanks-title" data-thanks-title>Thank you</p>
+  <p class="thanks-text" data-thanks-text></p>
+</div>
 </body>
 </html>

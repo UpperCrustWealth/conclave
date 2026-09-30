@@ -1,0 +1,30 @@
+.footer{border-top:1px solid var(--night-line);padding:64px 0 calc(40px + env(safe-area-inset-bottom,0px));background:var(--night-ink);color:rgba(251,248,240,.7);}
+.footer-inner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:28px;}
+.footer-brand img{height:40px;width:auto;}
+.footer-meta{font:300 15px/1.7 var(--sans);text-align:right;}
+.footer-meta a{color:var(--gold-light);text-decoration:none;}
+.footer-meta a:hover{text-decoration:underline;}
+.footer-meta .dot{display:inline-block;width:4px;height:4px;margin:0 12px 3px;border-radius:50%;background:rgba(220,188,126,.5);}
+@media (max-width:640px){ .footer-meta .dot{display:block;width:0;height:0;margin:0;} }
+.footer-small{margin-top:40px;padding-top:22px;border-top:1px solid rgba(220,188,126,.18);font:300 13px/1.6 var(--sans);color:rgba(251,248,240,.62);}
+@media (max-width:640px){ .footer-meta{text-align:left;} }
+
+/* Sticky booking dock — appears once the hero has scrolled away */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:35;
+  padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px));
+  background:rgba(11,18,35,.96);border-top:1px solid rgba(220,188,126,.28);
+  transform:translateY(110%);transition:transform .45s var(--ease);}
+.dock.is-on{transform:none;}
+.dock-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.dock-text{min-width:0;color:var(--paper);font:300 15px/1.35 var(--sans);}
+.dock-text strong{display:block;font:italic 400 18px/1.25 var(--serif);color:var(--paper);}
+.dock-text span{color:rgba(251,248,240,.66);}
+@media (max-width:480px){ .dock-text span{display:none;} .dock-text strong{font-size:17px;} }
+
+/* WhatsApp: shown only when config.whatsapp is set */
+.wa{position:fixed;right:18px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:36;display:inline-flex;align-items:center;gap:10px;
+  min-height:48px;padding:0 18px 0 14px;border-radius:999px;text-decoration:none;
+  font:500 14px/1 var(--sans);letter-spacing:.03em;color:var(--paper);background:#1f8f55;
+  border:1px solid rgba(255,255,255,.25);box-shadow:0 12px 30px -10px rgba(0,0,0,.45);transition:transform .25s var(--ease);}
+.wa:hover{transform:translateY(-2px);}
+@media (max-width:600px){ .wa span{display:none;} .wa{padding:0;width:52px;justify-content:center;} }

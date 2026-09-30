@@ -1,0 +1,33 @@
+/* Brand tokens — single source of truth for colour, type and spacing */
+:root{
+  --ivory:#f4efe1;
+  --paper:#fbf8f0;
+  --parchment:#f1e9d4;
+  --ink:#2b2620;
+  --ink-2:#4f483c;
+  --muted:#6b6252;
+  --gold:#a8813f;
+  --gold-deep:#7d5f28;
+  --gold-light:#dcbc7e;
+  --gold-line:rgba(168,129,63,.42);
+  --gold-hair:rgba(168,129,63,.22);
+  /* Midnight: the classic private-banking partner to gold */
+  --night:#1a2742;
+  --night-deep:#111b31;
+  --night-ink:#0b1223;
+  --night-line:rgba(220,188,126,.28);
+  --keynote:#ecebe6;
+
+  --sans:'Jost','Futura','Century Gothic','Avenir Next',system-ui,sans-serif;
+  --serif:'Playfair Display',Georgia,'Times New Roman',serif;
+
+  --wrap:1180px;
+  --wrap-narrow:920px;
+  --gutter:clamp(20px,5vw,56px);
+  --section-y:clamp(80px,11vw,148px);
+  --nav-h:76px;
+
+  --ease:cubic-bezier(.2,.7,.2,1);
+  --ease-io:cubic-bezier(.65,0,.35,1);
+}
+@media (max-width:720px){ :root{ --nav-h:64px; } }

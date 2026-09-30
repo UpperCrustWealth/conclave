@@ -1,0 +1,7 @@
+.intro{background:var(--paper);border-block:1px solid var(--gold-hair);}
+.intro-grid{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:clamp(32px,7vw,110px);align-items:start;}
+.intro-lede{font:200 clamp(30px,3.9vw,50px)/1.16 var(--sans);letter-spacing:-.01em;color:var(--ink);text-wrap:balance;}
+.intro-body{padding-top:10px;max-width:34em;}
+.intro-body p{color:var(--ink-2);}
+.intro-body p + p{margin-top:1.1em;}
+@media (max-width:860px){ .intro-grid{grid-template-columns:1fr;} .intro-body{padding-top:0;} }

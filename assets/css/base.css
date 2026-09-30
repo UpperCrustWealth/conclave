@@ -1,0 +1,90 @@
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{color-scheme:light only;background:var(--ivory);scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+body{
+  background:var(--ivory);color:var(--ink);
+  font:400 17px/1.7 var(--sans);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+img{display:block;max-width:100%;height:auto;}
+a{color:inherit;}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;}
+ul,ol{list-style:none;}
+[hidden]{display:none !important;}
+section[id],[id].anchor{scroll-margin-top:calc(var(--nav-h) + 12px);}
+
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px;}
+
+.skip{position:absolute;left:12px;top:-60px;z-index:100;padding:10px 16px;background:var(--ink);color:var(--paper);
+  border-radius:6px;text-decoration:none;transition:top .2s;}
+.skip:focus{top:12px;}
+
+.wrap{width:100%;max-width:calc(var(--wrap) + var(--gutter)*2);margin:0 auto;padding-inline:var(--gutter);}
+.wrap--narrow{max-width:calc(var(--wrap-narrow) + var(--gutter)*2);}
+
+.sec{padding-block:var(--section-y);}
+
+/* Section headings: light geometric sans with a serif-italic line beneath */
+.sec-head{margin-bottom:clamp(40px,6vw,72px);}
+.sec-title{font:300 clamp(34px,4.6vw,58px)/1.06 var(--sans);letter-spacing:-.012em;color:var(--ink);text-wrap:balance;}
+.sec-sub{margin-top:14px;font:italic 400 clamp(17px,1.7vw,21px)/1.45 var(--serif);color:var(--gold-deep);}
+
+/* Mode switch copy: prospect vs existing-client link (class set in <head> before paint) */
+.t-c{display:none;}
+.mode-client .t-p{display:none;}
+.mode-client .t-c{display:inline;}
+.mode-client .only-prospect{display:none !important;}
+.only-client{display:none !important;}
+.mode-client .only-client:not([hidden]){display:block !important;}
+
+/* ---------- Buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-height:52px;padding:0 30px;border-radius:999px;
+  font:500 15px/1 var(--sans);letter-spacing:.06em;text-decoration:none;white-space:nowrap;
+  border:1px solid transparent;cursor:pointer;
+  transition:transform .3s var(--ease),box-shadow .3s var(--ease),background-color .25s,color .25s,border-color .25s;
+}
+.btn-sm{min-height:42px;padding:0 20px;font-size:13.5px;}
+.btn-primary{
+  position:relative;overflow:hidden;isolation:isolate;color:#f6e6c2;
+  background:linear-gradient(135deg,#26375c 0%,var(--night) 50%,var(--night-deep) 100%);
+  border-color:rgba(220,188,126,.6);
+  box-shadow:0 12px 30px -12px rgba(11,18,35,.65),inset 0 1px 0 rgba(255,255,255,.12);
+}
+.btn-primary:hover{transform:translateY(-2px);border-color:var(--gold-light);
+  box-shadow:0 18px 36px -14px rgba(11,18,35,.75),inset 0 1px 0 rgba(255,255,255,.16);}
+.btn-primary:active{transform:translateY(0);}
+.btn-primary[disabled]{opacity:.7;cursor:wait;transform:none;}
+/* gold variant for dark backgrounds */
+.btn-gold{color:var(--night-ink);background:linear-gradient(135deg,#f3dca6 0%,#dcbc7e 45%,#b8914b 100%);
+  border-color:rgba(255,240,205,.7);box-shadow:0 12px 30px -12px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.5);}
+.btn-gold:hover{transform:translateY(-2px);filter:brightness(1.05);}
+/* the brand's signature light sweep — reserved for the one primary CTA */
+.btn-shine::before{
+  content:'';position:absolute;z-index:-1;top:-60%;left:-60%;width:22%;height:220%;
+  background:linear-gradient(100deg,transparent,rgba(255,224,158,.75),transparent);
+  transform:rotate(20deg);animation:shine 4.5s ease-in-out 1.6s infinite;pointer-events:none;
+}
+@keyframes shine{0%{left:-60%;}40%,100%{left:130%;}}
+
+.btn-ghost{color:var(--ink);background:transparent;border-color:var(--gold-line);}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold-deep);background:rgba(168,129,63,.06);}
+
+.link-btn{font:500 14px/1.4 var(--sans);color:var(--gold-deep);text-decoration:underline;text-underline-offset:4px;
+  text-decoration-color:var(--gold-line);}
+.link-btn:hover{text-decoration-color:var(--gold);}
+
+/* ornament: hairline — diamond — hairline (from the printed collateral) */
+.ornament{display:flex;align-items:center;justify-content:center;gap:14px;}
+.ornament span{display:block;width:clamp(48px,10vw,120px);height:1px;background:var(--gold-line);}
+.ornament i{display:block;width:8px;height:8px;border:1px solid var(--gold);transform:rotate(45deg);}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;}
+}
+
+/* explicit backgrounds — never rely on the viewer's page colour */
+main,.agenda,.hosts,.venue{background-color:var(--ivory);}
