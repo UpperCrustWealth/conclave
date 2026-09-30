@@ -40,7 +40,7 @@ default the page tidies `name` itself — see `tidyName()` in `mode.js`).
 
 ## 4. What the client sees
 1. The full landing page, personalized: "Hi Patel Family, you are invited to…" in the hero,
-   and the nav CTA reads "Confirm attendance" instead of "Request invitation".
+   and the nav CTA reads "Confirm your presence" instead of "Request invitation".
 2. In the RSVP card: **"Shall we reserve your place at the Wealth Conclave '26?"** → if Yes,
    **"How many people will attend?"** (1–5, chip picker).
 3. A "Thank you" celebration, with copy that reflects their actual answer (seat count, or a

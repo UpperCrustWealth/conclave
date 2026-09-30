@@ -29,7 +29,7 @@ export function initClientForm(mode) {
   function syncActions(name) {
     errorEl.textContent = '';
     nextBtn.hidden = name === 'attend' || (name === 'guests' && !data.guests);
-    nextLabel.textContent = name === 'guests' ? 'Confirm attendance' : 'Continue';
+    nextLabel.textContent = name === 'guests' ? 'Confirm your presence' : 'Continue';
   }
   function fail(msg) { errorEl.textContent = msg; }
 
