@@ -34,5 +34,5 @@ export function applyGreeting(mode) {
     hero.hidden = false;
   }
   document.querySelectorAll('[data-greet-inline]').forEach((el) => { el.textContent = mode.greet; });
-  document.title = 'Namaste, ' + mode.greet + " Ji, you're invited | Wealth Conclave ’26";
+  document.title = 'Namaste, ' + mode.greet + ", you're invited | Wealth Conclave ’26";
 }
