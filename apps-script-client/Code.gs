@@ -12,6 +12,13 @@ const SHEET_NAME = 'Responses';
 const HEADERS = [
   'Timestamp', 'PMS Registered Under', 'Matched', 'Your Name', 'Attending', 'No. of People', 'Source', 'Client Submitted At'
 ];
+// Shared secret for the read-only "confirmed" report used by the Master
+// consolidated sheet (apps-script-master/Code.gs). Keep this in sync with the
+// REPORT_KEY there. Without the correct key, doGet() reveals nothing beyond
+// the existing health-check message.
+// This repo is public — NEVER put the real secret here. Paste your own
+// random value directly in the Apps Script editor after pasting this file in.
+const REPORT_KEY = 'PASTE_YOUR_OWN_RANDOM_SECRET_HERE';
 
 // One-time setup: creates the sheet + header row. Run this once from the
 // editor (select setupSheet > Run). Safe to re-run.
@@ -101,6 +108,30 @@ function doPost(e) {
   }
 }
 
-function doGet() {
+function doGet(e) {
+  if (e && e.parameter && e.parameter.report === '1' && e.parameter.key === REPORT_KEY) {
+    return jsonOut_(buildConfirmedReport_());
+  }
   return jsonOut_({ status: 'ok', message: 'UCW Conclave client RSVP endpoint is live' });
+}
+
+// Every RSVP is logged as its own row (see doPost), so the same family/client
+// can have more than one — e.g. they said No, then later reopened the link
+// and said Yes. This keeps only each person's LATEST row, and reports them
+// only if that latest answer is "Yes".
+function buildConfirmedReport_() {
+  const sheet = getSheet_();
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return { result: 'success', rows: [] };
+  const values = sheet.getRange(2, 1, lastRow - 1, HEADERS.length).getValues();
+  const latestByName = {};
+  values.forEach((r) => {
+    const name = String(r[1]).trim(); // PMS Registered Under
+    if (!name) return;
+    latestByName[name] = { timestamp: r[0], attending: r[4], guests: r[5] }; // later rows overwrite earlier ones
+  });
+  const rows = Object.keys(latestByName)
+    .filter((name) => latestByName[name].attending === 'Yes')
+    .map((name) => ({ name: name, guests: latestByName[name].guests, timestamp: latestByName[name].timestamp }));
+  return { result: 'success', rows: rows };
 }

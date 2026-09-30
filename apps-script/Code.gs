@@ -11,6 +11,14 @@ const HEADERS = [
   'Capital Focus', 'Capital Scale', 'Evening Intent', 'Status', 'Source', 'IP/User-Agent',
   'Referred By', 'Referrer Name', 'Social Media'
 ];
+// Shared secret for the read-only "confirmed" report used by the Master
+// consolidated sheet (apps-script-master/Code.gs). Keep this in sync with the
+// REPORT_KEY there. Without the correct key, doGet() reveals nothing beyond
+// the existing health-check message — this does not open up the sheet to
+// anyone with just the /exec link.
+// This repo is public — NEVER put the real secret here. Paste your own
+// random value directly in the Apps Script editor after pasting this file in.
+const REPORT_KEY = 'PASTE_YOUR_OWN_RANDOM_SECRET_HERE';
 
 // One-time setup: creates the sheet + header row and formats the Phone column
 // as plain text. Run this once from the editor (select setupSheet > Run).
@@ -107,6 +115,22 @@ function doPost(e) {
   }
 }
 
-function doGet() {
+function doGet(e) {
+  if (e && e.parameter && e.parameter.report === '1' && e.parameter.key === REPORT_KEY) {
+    return jsonOut_(buildConfirmedReport_());
+  }
   return jsonOut_({ status: 'ok', message: 'UCW Conclave registration endpoint is live' });
+}
+
+// Only rows someone on the team has manually marked Status = "Confirmed"
+// in the sheet. Prospect requests sitting at "Pending Review" never appear.
+function buildConfirmedReport_() {
+  const sheet = getSheet_();
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return { result: 'success', rows: [] };
+  const values = sheet.getRange(2, 1, lastRow - 1, HEADERS.length).getValues();
+  const rows = values
+    .filter((r) => String(r[8]).trim() === 'Confirmed') // Status column
+    .map((r) => ({ name: r[1], timestamp: r[0] }));      // Full Name, Timestamp
+  return { result: 'success', rows: rows };
 }
