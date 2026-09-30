@@ -1003,12 +1003,14 @@
       }
       cGuestsSubmit.addEventListener('click', () => {
         if (!selectedGuests) return;
-        cSubmit({ attending: 'Yes', guests: selectedGuests });
+        cGuestsSubmit.disabled = true;
+        cGuestsSubmit.textContent = 'Submitting…';
+        cSubmit({ attending: 'Yes', guests: selectedGuests }, cGuestsSubmit);
       });
 
       // ---- submit (background write to the separate Client RSVP sheet) ----
       const cErrorMsg = document.getElementById('cErrorMsg');
-      function cSubmit(answer) {
+      function cSubmit(answer, btn) {
         cErrorMsg.style.display = 'none';
         if (cForm.website.value) return; // honeypot
 
@@ -1044,7 +1046,7 @@
         }
         const optimisticTimer = setTimeout(celebrateOnce, 3000);
 
-        postWithRetry(payload, CLIENT_ENDPOINT_URL, null)
+        postWithRetry(payload, CLIENT_ENDPOINT_URL, btn || null)
           .then(async (res) => {
             let data = null;
             try { data = JSON.parse(await res.text()); } catch (parseErr) { data = res.ok ? { result: 'success' } : { result: 'error', error: 'HTTP ' + res.status }; }
@@ -1060,6 +1062,7 @@
             }
             console.error('Client RSVP submit failed:', err);
             clearTimeout(optimisticTimer);
+            if (btn) { btn.disabled = false; btn.textContent = 'Submit'; }
             cErrorMsg.textContent = 'Something went wrong sending your response. Please try again, or email events@uppercrustwealth.com directly.';
             cErrorMsg.style.display = 'block';
           });
