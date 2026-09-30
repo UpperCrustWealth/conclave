@@ -1,6 +1,9 @@
-// ?client=1                 → existing-client RSVP
-// &name=<PMS name>          → recorded as the PMS name; skips the name questions
-// &hi=<greeting name>       → how we greet them on the page (falls back to a tidied &name)
+// ?client=1&name=<PMS name>  → existing-client RSVP, personalized to that name/family only.
+// &hi=<greeting name>        → how we greet them on the page (falls back to a tidied &name)
+// client=1 WITHOUT a name is intentionally NOT treated as client mode: there is no
+// generic client link that lets a visitor search or type in any name. Every client
+// link is personal, pre-filled from the sheet — never an open lookup over the full
+// client list, since that would expose every other client's name to whoever has it.
 // The html.mode-client class is set by an inline script in <head> (no flash).
 const clean = (s) => String(s || '').replace(/\s+/g, ' ').trim().slice(0, 80);
 
@@ -17,7 +20,7 @@ export function getMode() {
   const p = new URLSearchParams(location.search);
   const name = clean(p.get('name'));
   return {
-    isClient: p.get('client') === '1',
+    isClient: p.get('client') === '1' && !!name,
     name,
     greet: clean(p.get('hi')) || tidyName(name),
   };

@@ -1,10 +1,11 @@
-// Existing-client RSVP (?client=1, optionally &name=…). Posts to the separate
-// client sheet with the same payload as before (apps-script-client/Code.gs).
+// Existing-client RSVP. Only reachable via a personalized link (?client=1&name=…) —
+// getMode() in mode.js refuses to treat ?client=1 as client mode without a name, so
+// this never shows an open name search over the full client list. Posts to the
+// separate client sheet with the same payload as before (apps-script-client/Code.gs).
 import { CONFIG } from '../config.js';
 import { submit } from './api.js';
 import { createStepper, selectOption, clearOptions } from './stepper.js';
 import { celebrate } from './celebrate.js';
-import { attachAutocomplete } from './autocomplete.js';
 import { markDone, getDone, clearDone } from './done-state.js';
 
 export function initClientForm(mode) {
@@ -17,15 +18,11 @@ export function initClientForm(mode) {
   const nextLabel = nextBtn.querySelector('.lbl');
   const errorEl = $('[data-error]');
   const formError = $('[data-form-error]');
-  const pmsInput = $('#pmsName');
-  const yourName = $('#yourName');
-  const skipNames = !!mode.name; // personalised link already knows who this is
-  const first = skipNames ? 'attend' : 'pms';
+  const first = 'attend';
   let data = {};
-  let pmsMatched = false;
 
   const stepper = createStepper(form, {
-    total: () => (skipNames ? 1 : 3) + (data.attending === 'Yes' ? 1 : 0),
+    total: () => 1 + (data.attending === 'Yes' ? 1 : 0),
     onShow: syncActions,
   });
 
@@ -34,19 +31,7 @@ export function initClientForm(mode) {
     nextBtn.hidden = name === 'attend' || (name === 'guests' && !data.guests);
     nextLabel.textContent = name === 'guests' ? 'Confirm attendance' : 'Continue';
   }
-  function fail(msg, input) {
-    errorEl.textContent = msg;
-    if (input) { input.setAttribute('aria-invalid', 'true'); input.focus(); }
-  }
-
-  attachAutocomplete(pmsInput, $('#pmsAc'), {
-    load: () => import('../data/client-names.js').then((m) => m.default),
-    onPick: () => { pmsMatched = true; errorEl.textContent = ''; },
-  });
-  pmsInput.addEventListener('input', () => { pmsMatched = false; });
-  form.addEventListener('input', (e) => {
-    if (e.target.matches('.input')) { e.target.removeAttribute('aria-invalid'); errorEl.textContent = ''; }
-  });
+  function fail(msg) { errorEl.textContent = msg; }
 
   form.addEventListener('click', (e) => {
     const opt = e.target.closest('.opt');
@@ -65,14 +50,7 @@ export function initClientForm(mode) {
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const s = stepper.current;
-    if (s === 'pms') {
-      if (!pmsInput.value.trim()) return fail('Please enter the name your PMS is registered under.', pmsInput);
-      stepper.show('yourname');
-    } else if (s === 'yourname') {
-      if (!yourName.value.trim()) return fail('Please enter your name.', yourName);
-      stepper.show('attend');
-    } else if (s === 'guests') {
+    if (stepper.current === 'guests') {
       if (!data.guests) return fail('Please choose how many people will attend.');
       send();
     }
@@ -88,9 +66,9 @@ export function initClientForm(mode) {
   async function send() {
     formError.hidden = true;
     const payload = {
-      pmsName: skipNames ? mode.name : pmsInput.value.trim(),
-      pmsMatched: skipNames ? true : pmsMatched,
-      yourName: skipNames ? '' : yourName.value.trim(),
+      pmsName: mode.name,
+      pmsMatched: true,
+      yourName: '',
       attending: data.attending,
       guests: data.attending === 'Yes' ? data.guests : '',
       source: 'conclave-client-link',
@@ -140,7 +118,6 @@ export function initClientForm(mode) {
   done.querySelector('[data-done-reset]').addEventListener('click', () => {
     clearDone('client');
     data = {};
-    pmsMatched = false;
     form.reset();
     clearOptions(form);
     done.hidden = true;

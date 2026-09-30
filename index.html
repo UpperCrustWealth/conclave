@@ -21,7 +21,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Event","name":"UpperCrust Wealth Conclave '26","startDate":"2026-10-10T09:30:00+05:30","endDate":"2026-10-10T13:30:00+05:30","eventAttendanceMode":"https://schema.org/OfflineEventAttendanceMode","eventStatus":"https://schema.org/EventScheduled","location":{"@type":"Place","name":"Waves Club","address":{"@type":"PostalAddress","addressLocality":"Vadodara","addressRegion":"Gujarat","addressCountry":"IN"}},"organizer":{"@type":"Organization","name":"UpperCrust Wealth","url":"https://uppercrustconclave.in/","email":"yash@uppercrustwealth.com","telephone":"+91-9727753518"},"performer":[{"@type":"Person","name":"Romit Barat"},{"@type":"Person","name":"Ghazal Jain"},{"@type":"Person","name":"Dhruv Pawashe"},{"@type":"Person","name":"Deepak Jain"}]}</script>
 
 <!-- decide prospect vs client copy before first paint -->
-<script>if(/[?&]client=1(&|$)/.test(location.search))document.documentElement.classList.add('mode-client');</script>
+<script>if(/[?&]client=1(&|$)/.test(location.search)&&/[?&]name=[^&]/.test(location.search))document.documentElement.classList.add('mode-client');</script>
 
 <!-- fonts: self-hosted, the three used above the fold are preloaded -->
 <link rel="preload" href="assets/fonts/jost-latin-200-normal.woff2" as="font" type="font/woff2" crossorigin>
@@ -365,26 +365,12 @@
           <button type="button" class="link-btn" data-done-reset>Request for someone else</button>
         </div>
 
-        <!-- ---------- Existing-client RSVP (?client=1) ---------- -->
+        <!-- ---------- Existing-client RSVP (only ?client=1&name=… — see mode.js) ---------- -->
         <form id="clientForm" class="rsvp only-client" novalidate>
           <div class="hp" aria-hidden="true"><label>Leave blank <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
-          <div class="progress" aria-hidden="true"><span class="progress-bar"><i></i></span><span class="progress-text">Step 1 of 3</span></div>
+          <div class="progress" aria-hidden="true"><span class="progress-bar"><i></i></span><span class="progress-text">Step 1 of 2</span></div>
 
-          <div class="step is-active" data-step="pms">
-            <label class="q" for="pmsName">By which name is your PMS registered?</label>
-            <div class="ac">
-              <input class="input" type="text" id="pmsName" autocomplete="off" placeholder="Start typing the name" required>
-              <div class="ac-list" id="pmsAc" hidden></div>
-            </div>
-          </div>
-
-          <div class="step" data-step="yourname" hidden>
-            <label class="q" for="yourName">And your name?</label>
-            <p class="q-hint">In case you are replying for someone else.</p>
-            <input class="input" type="text" id="yourName" autocomplete="name" autocapitalize="words" required>
-          </div>
-
-          <div class="step" data-step="attend" role="group" aria-labelledby="q-attend" hidden>
+          <div class="step is-active" data-step="attend" role="group" aria-labelledby="q-attend">
             <p class="q" id="q-attend" tabindex="-1">Shall we reserve your place at the Wealth Conclave ’26?</p>
             <div class="opts" data-field="attending">
               <button type="button" class="opt opt--yes" aria-pressed="false" data-value="Yes">Yes, reserve our seats</button>
