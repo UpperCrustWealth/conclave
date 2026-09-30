@@ -1,6 +1,6 @@
 .footer{border-top:1px solid var(--night-line);padding:64px 0 calc(40px + env(safe-area-inset-bottom,0px));background:var(--night-ink);color:rgba(251,248,240,.7);}
 .footer-inner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:28px;}
-.footer-brand img{height:40px;width:auto;}
+.footer-brand img{height:40px;width:auto;filter:brightness(0) invert(1);}
 .footer-meta{font:300 15px/1.7 var(--sans);text-align:right;}
 .footer-meta a{color:var(--gold-light);text-decoration:none;}
 .footer-meta a:hover{text-decoration:underline;}
