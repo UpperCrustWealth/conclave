@@ -190,17 +190,27 @@ function onOpen() {
 // rows, or null if it could not be read properly (wrong key, network error). A
 // wrong key makes the script answer with its plain health-check JSON, which has
 // no rows array — that must count as a failure, not as "nobody confirmed yet".
-function fetchReport_(label, baseUrl) {
-  try {
-    const res = UrlFetchApp.fetch(baseUrl + '?report=1&key=' + encodeURIComponent(REPORT_KEY), { muteHttpExceptions: true });
-    const data = JSON.parse(res.getContentText());
-    if (data.result === 'success' && Array.isArray(data.rows)) return data.rows;
-    Logger.log(label + ': unexpected response ' + res.getContentText().slice(0, 200));
-    return null;
-  } catch (err) {
-    Logger.log(label + ': fetch failed ' + err);
-    return null;
+// Google now and then answers a web-app call with an error page for a moment.
+// Retry up to 3 times (waiting a little longer each time) before giving up.
+// A reply that IS valid JSON but wrong (e.g. wrong key) is not retried.
+function fetchJson_(url, label) {
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const res = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+      return JSON.parse(res.getContentText());
+    } catch (err) {
+      Logger.log(label + ': attempt ' + attempt + ' failed ' + err);
+      if (attempt < 3) Utilities.sleep(2000 * attempt);
+    }
   }
+  return null;
+}
+
+function fetchReport_(label, baseUrl) {
+  const data = fetchJson_(baseUrl + '?report=1&key=' + encodeURIComponent(REPORT_KEY), label);
+  if (data && data.result === 'success' && Array.isArray(data.rows)) return data.rows;
+  Logger.log(label + ': unexpected or missing response');
+  return null;
 }
 
 // RM list: that script already serves every RM's clients with their status and
@@ -216,16 +226,10 @@ function flattenRm_(rms) {
 }
 
 function fetchRm_(baseUrl) {
-  try {
-    const res = UrlFetchApp.fetch(baseUrl, { muteHttpExceptions: true });
-    const data = JSON.parse(res.getContentText());
-    if (data.result === 'success' && Array.isArray(data.rms)) return flattenRm_(data.rms);
-    Logger.log('RM list: unexpected response ' + res.getContentText().slice(0, 200));
-    return null;
-  } catch (err) {
-    Logger.log('RM list: fetch failed ' + err);
-    return null;
-  }
+  const data = fetchJson_(baseUrl, 'RM list');
+  if (data && data.result === 'success' && Array.isArray(data.rms)) return flattenRm_(data.rms);
+  Logger.log('RM list: unexpected or missing response');
+  return null;
 }
 
 // Online registrations: read straight from the Registrations spreadsheet (this
