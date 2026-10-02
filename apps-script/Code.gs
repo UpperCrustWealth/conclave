@@ -9,15 +9,8 @@ const SHEET_NAME = 'Registrations';
 const HEADERS = [
   'Timestamp', 'Full Name', 'Phone', 'Email', 'Capital Priority',
   'Capital Focus', 'Capital Scale', 'Evening Intent', 'Status', 'Source', 'IP/User-Agent',
-  'Referred By', 'Referrer Name', 'Social Media',
-  // filled in by hand by the team while confirming by phone (never sent by the form)
-  'Category', 'Guests'
+  'Referred By', 'Referrer Name', 'Social Media'
 ];
-const STATUS_OPTIONS = ['Pending Review', 'Confirmed', 'Declined', 'Unreachable'];
-// Optional override of how the Master dashboard groups this person. Must match
-// the CATS list in apps-script-master/Code.gs exactly. Blank = automatic
-// (friend -> Referrals, UpperCrust team -> Direct Invites, none -> Online).
-const CATEGORY_OPTIONS = ['PMS Clients', 'Referrals', 'Direct Invites', 'RM List', 'Online (Social Media)'];
 // Shared secret for the read-only "confirmed" report used by the Master
 // consolidated sheet (apps-script-master/Code.gs). Keep this in sync with the
 // REPORT_KEY there. Without the correct key, doGet() reveals nothing beyond
@@ -38,12 +31,6 @@ function setupSheet() {
   sheet.setFrozenRows(1);
   // plain text for the whole Phone column so "+" numbers never become formulas
   sheet.getRange('C:C').setNumberFormat('@');
-  // dropdowns so the team can't mistype "Confirmed" (the Master sheet matches it exactly)
-  const rows = Math.max(sheet.getMaxRows() - 1, 1);
-  const dv = () => SpreadsheetApp.newDataValidation();
-  sheet.getRange(2, 9, rows, 1).setDataValidation(dv().requireValueInList(STATUS_OPTIONS, true).setAllowInvalid(false).build());
-  sheet.getRange(2, 15, rows, 1).setDataValidation(dv().requireValueInList(CATEGORY_OPTIONS, true).setAllowInvalid(false).build());
-  sheet.getRange(2, 16, rows, 1).setDataValidation(dv().requireNumberBetween(1, 100).setAllowInvalid(false).build());
   return sheet;
 }
 
@@ -144,15 +131,6 @@ function buildConfirmedReport_() {
   const values = sheet.getRange(2, 1, lastRow - 1, HEADERS.length).getValues();
   const rows = values
     .filter((r) => String(r[8]).trim() === 'Confirmed') // Status column
-    .map((r) => ({
-      name: String(r[1]).trim(),
-      phone: String(r[2]).trim(),
-      timestamp: r[0],
-      referredBy: String(r[11]).trim(),
-      referrerName: String(r[12]).trim(),
-      socialMedia: String(r[13]).trim(),
-      category: String(r[14] || '').trim(),
-      guests: r[15]
-    }));
+    .map((r) => ({ name: r[1], timestamp: r[0] }));      // Full Name, Timestamp
   return { result: 'success', rows: rows };
 }

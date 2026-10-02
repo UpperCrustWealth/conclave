@@ -4,29 +4,38 @@
  * One BRAND-NEW Google Sheet (bind this script to it) that pulls everyone who
  * has CONFIRMED from every channel, groups them, and draws a dashboard:
  *
- *   PMS Clients            <- PMS client RSVP links  (apps-script-client/Code.gs): latest answer = Yes
- *   Referrals              <- online form, "Who referred you" = A friend      (Status = Confirmed)
+ *   PMS Clients            <- PMS client RSVP links: latest answer = Yes (existing key-protected
+ *                             report on apps-script-client/Code.gs, already live)
+ *   Referrals              <- online registrations, "Who referred you" = A friend      (Status = Confirmed)
  *   Direct Invites         <- "Direct Invites" tab of THIS sheet (typed by hand) and
- *                             online form, "Who referred you" = UpperCrust team (Status = Confirmed)
- *   RM List                <- RM attendance tracker (RM form's apps-script/Code.gs): Status = Confirmed
- *   Online (Social Media)  <- online form, "Who referred you" = No one (Status = Confirmed)
+ *                             online registrations, "Who referred you" = UpperCrust team (Status = Confirmed)
+ *   RM List                <- RM attendance tracker: Status = Confirmed (the list it already serves)
+ *   Online (Social Media)  <- online registrations, "Who referred you" = No one (Status = Confirmed)
  *
- * The team can override an online registrant's group with the Category column
- * in the Registrations sheet, and set their real headcount in its Guests
- * column (blank = 1 person).
+ * NO phone numbers are pulled for PMS or RM clients. Phones appear only for
+ * online registrations and hand-typed Direct Invites.
+ *
+ * This script changes NOTHING in the three live web-link scripts. Online
+ * registrations are read straight from the Registrations spreadsheet (this
+ * script runs as you, the owner), so it needs that spreadsheet's ID.
+ *
+ * Optional, by hand, in the Registrations sheet: add two columns headed exactly
+ * "Category" and "Guests". Category (one of the five group names) overrides the
+ * automatic group; Guests is the real headcount (blank = 1 person).
  *
  * Tabs: Dashboard (for management), Confirmed (flat list — also the table to
  * point Looker Studio at), Direct Invites (typed by hand).
  *
- * Nothing here writes back to the source sheets. This script does NOT need to
- * be deployed as a Web App.
+ * Nothing here writes back to any source sheet, and this script does NOT need
+ * to be deployed as a Web App.
  *
  * Setup:
  *   1. Paste this whole file into Extensions > Apps Script of the Master sheet.
- *   2. Replace PASTE_YOUR_OWN_RANDOM_SECRET_HERE below with the shared secret
- *      (same value as in the other three scripts). This repo is public —
- *      never commit the real value.
- *   3. Run `setup` once (authorize when asked).
+ *   2. Replace the two PASTE_... placeholders below (the shared secret, and
+ *      the Registrations spreadsheet ID — the long text between /d/ and /edit
+ *      in its URL). This repo is public — never commit the real values.
+ *   3. Run `setup` once, then run `refresh` once from the editor and approve
+ *      the permission prompt (it now also reads the Registrations spreadsheet).
  *   4. Run `createAutoRefreshTrigger` once so it refreshes itself every 10 min,
  *      or use the menu UCW Conclave > Refresh now.
  */
@@ -38,18 +47,21 @@ const SHEET_DASH = 'Dashboard';
 const HEADERS = ['Category', 'Name', 'Phone', 'Guests', 'Source Detail', 'Confirmed On', 'Last Refreshed'];
 const DIRECT_HEADERS = ['Name', 'Phone', 'Guests', 'Invited By', 'Status', 'Notes'];
 
-// Priority order = the order shown on the dashboard. Must match CATEGORY_OPTIONS
-// in apps-script/Code.gs exactly.
+// Priority order = the order shown on the dashboard. The Category column in
+// the Registrations sheet must use these exact names.
 const CATS = ['PMS Clients', 'Referrals', 'Direct Invites', 'RM List', 'Online (Social Media)'];
 const PLATFORMS = ['Instagram', 'LinkedIn', 'Facebook'];
 const NOT_SPECIFIED = 'Not specified';
 
-// This repo is public — NEVER put the real secret here. Paste your own
-// random value directly in the Apps Script editor after pasting this file in.
+// This repo is public — NEVER put the real values here. Paste them directly in
+// the Apps Script editor after pasting this file in.
+// Secret for the PMS script's existing report mode (same value already set there):
 const REPORT_KEY = 'PASTE_YOUR_OWN_RANDOM_SECRET_HERE';
+// ID of the Registrations spreadsheet (online form): the text between /d/ and /edit in its URL.
+const REGISTRATIONS_SHEET_ID = 'PASTE_REGISTRATIONS_SPREADSHEET_ID_HERE';
+const REGISTRATIONS_TAB = 'Registrations';
 
 const SOURCES = {
-  prospect: 'https://script.google.com/macros/s/AKfycbz_fEoEaNBCcx1-XPOtqDesTr5j4kyJITNfwz4aFbGQ2FU_0UfWBBt3fHf0aFYI0Eo/exec',
   pms: 'https://script.google.com/macros/s/AKfycbyusCglVKDwgUIbD9lpwdZDhy6z2IpjS-rWN5Z4-MvaykYUUjCJrljMzuM0e5C0fi0/exec',
   rm: 'https://script.google.com/macros/s/AKfycbxuAb2ncBt-Ou5CBv-DPq-91f6UfkVsFoUsG0dbm_uZwgE9wOgKoyowCVBHwYMdfyCl/exec',
 };
@@ -97,7 +109,7 @@ function buildRows_(src) {
     rows.push([cat, str_(r.name), str_(r.phone), guestsOr1_(r.guests), prospectDetail_(r, cat), toDate_(r.timestamp)]);
   });
   (src.rm || []).forEach((r) => rows.push(
-    ['RM List', str_(r.name), str_(r.phone), guestsOr1_(r.guests), str_(r.rm), toDate_(r.timestamp)]));
+    ['RM List', str_(r.name), '', guestsOr1_(r.guests), str_(r.rm), toDate_(r.timestamp)]));
   (src.direct || []).forEach((r) => rows.push(
     ['Direct Invites', str_(r.name), str_(r.phone), guestsOr1_(r.guests),
       str_(r.invitedBy) ? 'Invited by ' + str_(r.invitedBy) : 'Invited by UpperCrust team', '']));
@@ -174,10 +186,10 @@ function onOpen() {
     .addToUi();
 }
 
-// Returns the report rows, or null if the source could not be read properly
-// (wrong key, script not redeployed, network error). A wrong key makes the
-// source answer with its plain health-check JSON, which has no rows array —
-// that must count as a failure, not as "nobody confirmed yet".
+// PMS links: the key-protected report already live on that script. Returns the
+// rows, or null if it could not be read properly (wrong key, network error). A
+// wrong key makes the script answer with its plain health-check JSON, which has
+// no rows array — that must count as a failure, not as "nobody confirmed yet".
 function fetchReport_(label, baseUrl) {
   try {
     const res = UrlFetchApp.fetch(baseUrl + '?report=1&key=' + encodeURIComponent(REPORT_KEY), { muteHttpExceptions: true });
@@ -187,6 +199,68 @@ function fetchReport_(label, baseUrl) {
     return null;
   } catch (err) {
     Logger.log(label + ': fetch failed ' + err);
+    return null;
+  }
+}
+
+// RM list: that script already serves every RM's clients with their status and
+// head-count, so this just keeps Status = Confirmed. (No phones — it has none.)
+function flattenRm_(rms) {
+  const rows = [];
+  (rms || []).forEach((rm) => {
+    (rm.clients || []).forEach((c) => {
+      if (str_(c.status) === 'Confirmed') rows.push({ name: c.name, rm: rm.name, guests: c.guests });
+    });
+  });
+  return rows;
+}
+
+function fetchRm_(baseUrl) {
+  try {
+    const res = UrlFetchApp.fetch(baseUrl, { muteHttpExceptions: true });
+    const data = JSON.parse(res.getContentText());
+    if (data.result === 'success' && Array.isArray(data.rms)) return flattenRm_(data.rms);
+    Logger.log('RM list: unexpected response ' + res.getContentText().slice(0, 200));
+    return null;
+  } catch (err) {
+    Logger.log('RM list: fetch failed ' + err);
+    return null;
+  }
+}
+
+// Online registrations: read straight from the Registrations spreadsheet (this
+// script runs as the sheet's owner), so the live registration script needs no
+// changes. Columns are found by their header text, so order doesn't matter and
+// the optional "Category" / "Guests" columns are used only if they exist.
+// Returns null if the sheet can't be read (ID not set, no access, tab missing).
+function readRegistrations_() {
+  if (!REGISTRATIONS_SHEET_ID || REGISTRATIONS_SHEET_ID.indexOf('PASTE_') === 0) {
+    Logger.log('Online registrations: REGISTRATIONS_SHEET_ID is not set');
+    return null;
+  }
+  try {
+    const sh = SpreadsheetApp.openById(REGISTRATIONS_SHEET_ID).getSheetByName(REGISTRATIONS_TAB);
+    if (!sh) { Logger.log('Online registrations: tab not found'); return null; }
+    if (sh.getLastRow() < 2) return [];
+    const values = sh.getRange(1, 1, sh.getLastRow(), sh.getLastColumn()).getValues();
+    const head = values[0].map((h) => str_(h).toLowerCase());
+    const col = (name) => head.indexOf(name.toLowerCase());
+    const c = {
+      ts: col('Timestamp'), name: col('Full Name'), phone: col('Phone'), status: col('Status'),
+      by: col('Referred By'), ref: col('Referrer Name'), soc: col('Social Media'),
+      cat: col('Category'), guests: col('Guests'),
+    };
+    if (c.name < 0 || c.status < 0) { Logger.log('Online registrations: Full Name / Status headers not found'); return null; }
+    const get = (r, i) => (i < 0 ? '' : r[i]);
+    return values.slice(1)
+      .filter((r) => str_(get(r, c.status)).toLowerCase() === 'confirmed')
+      .map((r) => ({
+        name: get(r, c.name), phone: get(r, c.phone), timestamp: get(r, c.ts),
+        referredBy: get(r, c.by), referrerName: get(r, c.ref), socialMedia: get(r, c.soc),
+        category: get(r, c.cat), guests: get(r, c.guests),
+      }));
+  } catch (err) {
+    Logger.log('Online registrations: read failed ' + err);
     return null;
   }
 }
@@ -274,16 +348,15 @@ function refresh() {
   const lock = LockService.getScriptLock();
   if (!lock.tryLock(20000)) return;
   try {
-    const prospect = fetchReport_('Online registrations', SOURCES.prospect);
+    const prospect = readRegistrations_();
     const pms = fetchReport_('PMS links', SOURCES.pms);
-    const rm = fetchReport_('RM list', SOURCES.rm);
+    const rm = fetchRm_(SOURCES.rm);
     const failed = [];
-    if (!prospect) failed.push('Online registrations');
-    if (!pms) failed.push('PMS links');
+    if (!prospect) failed.push('Online registrations (check the spreadsheet ID)');
+    if (!pms) failed.push('PMS links (check the secret key)');
     if (!rm) failed.push('RM list');
     if (failed.length) {
-      setDashStatus_('Refresh FAILED for: ' + failed.join(', ') +
-        ' — still showing the previous data. Check the secret key and that script was redeployed.');
+      setDashStatus_('Refresh FAILED for: ' + failed.join(', ') + ' — still showing the previous data.');
       toast_('Refresh failed for: ' + failed.join(', '));
       return;
     }
